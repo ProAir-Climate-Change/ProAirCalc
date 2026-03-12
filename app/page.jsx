@@ -50,6 +50,68 @@ function roundToRecommendedSize(kw) {
   return unitSizes[unitSizes.length - 1];
 }
 
+function getPriceBand(brand, recommended) {
+  if (brand === "mitsubishi") {
+    if (recommended <= 3.5) {
+      return {
+        from: 1800,
+        to: 2000,
+        note: "Typical single split allowance for Mitsubishi Electric wall mount.",
+      };
+    }
+    if (recommended <= 5.0) {
+      return {
+        from: 2400,
+        to: 2600,
+        note: "Allows for larger unit, extra materials and typical labour uplift.",
+      };
+    }
+    if (recommended <= 7.1) {
+      return {
+        from: 3000,
+        to: 3300,
+        note: "Usually a larger wall mount or more involved install.",
+      };
+    }
+    return {
+      from: 3500,
+      to: 4500,
+      note: "Likely needs site-specific pricing due to system type and install complexity.",
+    };
+  }
+
+  if (recommended <= 3.5) {
+    return {
+      from: 1500,
+      to: 1700,
+      note: "Typical single split allowance for Midea wall mount.",
+    };
+  }
+  if (recommended <= 5.0) {
+    return {
+      from: 2000,
+      to: 2200,
+      note: "Allows for larger indoor/outdoor set and usual install uplift.",
+    };
+  }
+  if (recommended <= 7.1) {
+    return {
+      from: 2600,
+      to: 2900,
+      note: "Usually a larger wall mount or more involved install.",
+    };
+  }
+  return {
+    from: 3000,
+    to: 4000,
+    note: "Likely needs site-specific pricing due to system type and install complexity.",
+  };
+}
+
+function formatPrice(value) {
+  return `£${value.toLocaleString("en-GB")}`;
+}
+
 export default function Page() {
   const [length, setLength] = useState(5);
   const [width, setWidth] = useState(4);
@@ -85,12 +147,26 @@ export default function Page() {
       midea: "No model mapped",
     };
 
+    let systemType = "Wall mounted split system";
+    if (recommended >= 6) {
+      systemType = "Wall mounted or cassette system";
+    }
+    if (recommended >= 8) {
+      systemType = "Cassette or ducted system";
+    }
+
+    const mitsubishiPrice = getPriceBand("mitsubishi", recommended);
+    const mideaPrice = getPriceBand("midea", recommended);
+
     return {
       area: area.toFixed(1),
       kw: kw.toFixed(2),
       recommended: recommended.toFixed(1),
+      systemType,
       mitsubishi: models.mitsubishi,
       midea: models.midea,
+      mitsubishiPrice,
+      mideaPrice,
     };
   }, [length, width, height, roomType, glazing, exposure]);
 
@@ -104,7 +180,7 @@ export default function Page() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
         <div style={{ marginBottom: "24px" }}>
           <h1 style={{ margin: 0, fontSize: "42px", fontWeight: 700 }}>
             <span style={{ color: "#666a73" }}>PRO</span>
@@ -218,10 +294,14 @@ export default function Page() {
                 fontWeight: 700,
                 color: "#0b2e73",
                 marginTop: "24px",
-                marginBottom: "24px",
+                marginBottom: "12px",
               }}
             >
               Recommended unit: {result.recommended} kW
+            </p>
+
+            <p style={{ marginTop: 0, fontWeight: 600 }}>
+              Suggested system: {result.systemType}
             </p>
 
             <div
@@ -233,15 +313,35 @@ export default function Page() {
               }}
             >
               <p style={{ marginTop: 0, fontWeight: 700 }}>
-                Suggested Mitsubishi Electric 
+                Suggested Mitsubishi Electric
               </p>
-              <p>{result.mitsubishi}</p>
+              <p style={{ marginBottom: "8px" }}>{result.mitsubishi}</p>
+              <p style={{ marginTop: 0, color: "#334155" }}>
+                Estimated installed price: {formatPrice(result.mitsubishiPrice.from)} to{" "}
+                {formatPrice(result.mitsubishiPrice.to)}
+              </p>
 
-              <p style={{ fontWeight: 700, marginTop: "16px" }}>
-                Suggested Midea
+              <p style={{ fontWeight: 700, marginTop: "18px" }}>Suggested Midea</p>
+              <p style={{ marginBottom: "8px" }}>{result.midea}</p>
+              <p style={{ marginTop: 0, marginBottom: 0, color: "#334155" }}>
+                Estimated installed price: {formatPrice(result.mideaPrice.from)} to{" "}
+                {formatPrice(result.mideaPrice.to)}
               </p>
-              <p style={{ marginBottom: 0 }}>{result.midea}</p>
             </div>
+
+            <p
+              style={{
+                marginTop: "18px",
+                marginBottom: 0,
+                fontSize: "14px",
+                color: "#475569",
+                lineHeight: 1.5,
+              }}
+            >
+              Guide prices only. Final pricing should still be adjusted for pipe run,
+              brackets, trunking, access, electrical work, condensate route and overall
+              install difficulty.
+            </p>
           </div>
         </div>
       </div>
