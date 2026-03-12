@@ -233,7 +233,7 @@ export default function Page() {
               }}
             >
               <p style={{ marginTop: 0, fontWeight: 700 }}>
-                Suggested Mitsubishi Electric 1
+                Suggested Mitsubishi Electric 
               </p>
               <p>{result.mitsubishi}</p>
 
