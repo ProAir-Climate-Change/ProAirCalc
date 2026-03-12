@@ -79,7 +79,7 @@ export default function Page() {
 
     const kw = (area * wattsPerM2 * factor) / 1000;
     const recommended = roundToRecommendedSize(kw);
-    const recommendedKey = Number(recommended.toFixed(1));
+    const recommendedKey = Math.round(recommended * 10) / 10;
 const models = modelMap[recommendedKey] || {
   mitsubishi: "No model mapped",
   midea: "No model mapped",
