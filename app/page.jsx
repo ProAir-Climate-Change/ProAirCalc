@@ -1037,7 +1037,7 @@ const customerEstimate = useMemo(() => {
   setSelectedCustomerSystem("midea");
   document
     .getElementById("customer-form-start")
-    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    ?.scrollIntoView({ behavior: "smooth", block: "center" });
 }}
   style={{
     background: "#e9edf3",
@@ -1112,7 +1112,7 @@ const customerEstimate = useMemo(() => {
   setSelectedCustomerSystem("mitsubishi");
   document
     .getElementById("customer-form-start")
-    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    ?.scrollIntoView({ behavior: "smooth", block: "center" });
 }}
   style={{
     background: "#e9edf3",
@@ -1202,7 +1202,7 @@ const customerEstimate = useMemo(() => {
   setSelectedCustomerSystem("zen");
   document
     .getElementById("customer-form-start")
-    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    ?.scrollIntoView({ behavior: "smooth", block: "center" });
 }}
   style={{
     background: "#e9edf3",
