@@ -1051,14 +1051,6 @@ const customerEstimate = useMemo(() => {
   </p>
 </div>
 
-<textarea
-  name="Customer notes"
-  value={customerNotes}
-  onChange={(e) => setCustomerNotes(e.target.value)}
-  style={textAreaStyle}
-  rows={5}
-  placeholder="e.g. customer prefers rear garden location, wants neat trunking, outdoor needs to be discreet..."
-/>
 
               <button type="submit" style={buttonStyle}>
                 Send estimate request
