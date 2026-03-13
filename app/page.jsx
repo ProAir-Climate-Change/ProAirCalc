@@ -1277,7 +1277,6 @@ const customerEstimate = useMemo(() => {
       />
     </div>
 
-      {selectedCustomerSystem === "mitsubishi" && (
     {selectedCustomerSystem === "zen" && (
   <p
     style={{
