@@ -382,6 +382,7 @@ export default function Page() {
   const [customerPostcode, setCustomerPostcode] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
   const [customerRooms, setCustomerRooms] = useState([defaultCustomerRoom]);
+  const [selectedCustomerSystem, setSelectedCustomerSystem] = useState("mitsubishi");
 
   const [rooms, setRooms] = useState([defaultInstallerRoom]);
   const [brandPreference, setBrandPreference] = useState("both");
@@ -787,6 +788,7 @@ const customerEstimate = useMemo(() => {
               <input type="hidden" name="_captcha" value="false" />
               <input type="hidden" name="_template" value="table" />
               <input type="hidden" name="Room summary" value={customerRoomSummary} />
+              <input type="hidden" name="Selected system" value={selectedCustomerSystem} />
 
               <div style={twoColGridStyle}>
                 <div>
@@ -1031,13 +1033,22 @@ const customerEstimate = useMemo(() => {
   }}
 >
   <div
-    style={{
-      background: "#e9edf3",
-      borderRadius: "16px",
-      padding: "18px",
-      border: "2px solid #d6dde8",
-    }}
-  >
+  onClick={() => setSelectedCustomerSystem("midea")}
+  style={{
+    background: "#e9edf3",
+    borderRadius: "16px",
+    padding: "18px",
+    border:
+      selectedCustomerSystem === "midea"
+        ? "2px solid #0b2e73"
+        : "2px solid #d6dde8",
+    boxShadow:
+      selectedCustomerSystem === "midea"
+        ? "0 8px 24px rgba(11,46,115,0.12)"
+        : "none",
+    cursor: "pointer"
+  }}
+>
     <div
       style={{
         height: "160px",
@@ -1092,14 +1103,22 @@ const customerEstimate = useMemo(() => {
   </div>
 
   <div
-    style={{
-      background: "#e9edf3",
-      borderRadius: "16px",
-      padding: "18px",
-      border: "2px solid #0b2e73",
-      boxShadow: "0 8px 24px rgba(11,46,115,0.12)",
-    }}
-  >
+  onClick={() => setSelectedCustomerSystem("mitsubishi")}
+  style={{
+    background: "#e9edf3",
+    borderRadius: "16px",
+    padding: "18px",
+    border:
+      selectedCustomerSystem === "mitsubishi"
+        ? "2px solid #0b2e73"
+        : "2px solid #d6dde8",
+    boxShadow:
+      selectedCustomerSystem === "mitsubishi"
+        ? "0 8px 24px rgba(11,46,115,0.12)"
+        : "none",
+    cursor: "pointer"
+  }}
+>
     <div
       style={{
         height: "160px",
@@ -1169,14 +1188,23 @@ const customerEstimate = useMemo(() => {
   </div>
 
   <div
-    style={{
-      background: "#e9edf3",
-      borderRadius: "16px",
-      padding: "18px",
-      border: "2px solid #d6dde8",
-      opacity: customerEstimate.zenTotal > 0 ? 1 : 0.65,
-    }}
-  >
+  onClick={() => setSelectedCustomerSystem("zen")}
+  style={{
+    background: "#e9edf3",
+    borderRadius: "16px",
+    padding: "18px",
+    border:
+      selectedCustomerSystem === "zen"
+        ? "2px solid #0b2e73"
+        : "2px solid #d6dde8",
+    boxShadow:
+      selectedCustomerSystem === "zen"
+        ? "0 8px 24px rgba(11,46,115,0.12)"
+        : "none",
+    cursor: "pointer",
+    opacity: customerEstimate.zenTotal > 0 ? 1 : 0.65,
+  }}
+>
     <div
       style={{
         height: "160px",
