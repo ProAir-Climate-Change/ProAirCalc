@@ -418,10 +418,28 @@ export default function Page() {
   };
 
   const updateCustomerRoom = (id, field, value) => {
-    setCustomerRooms((prev) =>
-      prev.map((room) => (room.id === id ? { ...room, [field]: value } : room))
-    );
+  const roomTypeNames = {
+    bedroom: "Bedroom",
+    living: "Living Room",
+    office: "Office",
+    garden_room: "Garden Room",
+    kitchen: "Kitchen",
   };
+
+  setCustomerRooms((prev) =>
+    prev.map((room) => {
+      if (room.id !== id) return room;
+
+      const updatedRoom = { ...room, [field]: value };
+
+      if (field === "roomType") {
+        updatedRoom.name = roomTypeNames[value] || "Room";
+      }
+
+      return updatedRoom;
+    })
+  );
+};
 
   const addCustomerRoom = () => {
     setCustomerRooms((prev) => [
