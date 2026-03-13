@@ -1077,7 +1077,7 @@ const customerEstimate = useMemo(() => {
       />
     </div>
 
-     {selectedCustomerSystem === "midea" && (
+   {selectedCustomerSystem === "midea" && (
   <p
     style={{
       display: "inline-block",
@@ -1093,7 +1093,19 @@ const customerEstimate = useMemo(() => {
     ✓ Selected
   </p>
 )}
-    >
+
+<p
+  style={{
+    display: "inline-block",
+    margin: "0 0 10px 0",
+    padding: "6px 10px",
+    borderRadius: "999px",
+    background: "#dbeafe",
+    color: "#1d4ed8",
+    fontSize: "12px",
+    fontWeight: 700,
+  }}
+>
       Budget
     </p>
 
