@@ -1172,10 +1172,12 @@ const customerEstimate = useMemo(() => {
     alignItems: "center",
     justifyContent: "center",
     marginBottom: "14px",
+    overflow: "hidden"
   }}
 >
   <img
     src="/mitsubishi-ay.png"
+    alt="Mitsubishi Electric AY"
     style={{
       maxWidth: "100%",
       maxHeight: "100%",
