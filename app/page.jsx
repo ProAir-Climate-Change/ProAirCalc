@@ -1199,7 +1199,7 @@ const customerEstimate = useMemo(() => {
 
   <div
   onClick={() => {
-  setSelectedCustomerSystem("mitsubishi");
+  setSelectedCustomerSystem("zen");
   document
     .getElementById("customer-form-start")
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
