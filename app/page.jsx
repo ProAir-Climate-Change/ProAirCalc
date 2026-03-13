@@ -148,7 +148,7 @@ const ductedModelMap = {
   },
 };
 
-const defaultRoom = {
+const defaultInstallerRoom = {
   id: 1,
   name: "Room 1",
   length: 5,
@@ -158,6 +158,19 @@ const defaultRoom = {
   glazing: "medium",
   exposure: "south",
   pipeRun: "standard",
+  floorLevel: "ground",
+  outdoorSide: "same_side",
+};
+
+const defaultCustomerRoom = {
+  id: 1,
+  name: "Room 1",
+  length: 5,
+  width: 4,
+  height: 2.4,
+  roomType: "living",
+  glazing: "medium",
+  exposure: "south",
   floorLevel: "ground",
   outdoorSide: "same_side",
 };
@@ -361,7 +374,16 @@ function getSystemOptions(
 }
 
 export default function Page() {
-  const [rooms, setRooms] = useState([defaultRoom]);
+  const [viewMode, setViewMode] = useState("customer");
+
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPostcode, setCustomerPostcode] = useState("");
+  const [customerNotes, setCustomerNotes] = useState("");
+  const [customerRooms, setCustomerRooms] = useState([defaultCustomerRoom]);
+
+  const [rooms, setRooms] = useState([defaultInstallerRoom]);
   const [brandPreference, setBrandPreference] = useState("both");
   const [systemType, setSystemType] = useState("wall");
   const [roomSpread, setRoomSpread] = useState("same_side");
@@ -380,7 +402,7 @@ export default function Page() {
     setRooms((prev) => [
       ...prev,
       {
-        ...defaultRoom,
+        ...defaultInstallerRoom,
         id: Date.now(),
         name: `Room ${prev.length + 1}`,
       },
@@ -389,6 +411,30 @@ export default function Page() {
 
   const removeRoom = (id) => {
     setRooms((prev) => {
+      if (prev.length === 1) return prev;
+      return prev.filter((room) => room.id !== id);
+    });
+  };
+
+  const updateCustomerRoom = (id, field, value) => {
+    setCustomerRooms((prev) =>
+      prev.map((room) => (room.id === id ? { ...room, [field]: value } : room))
+    );
+  };
+
+  const addCustomerRoom = () => {
+    setCustomerRooms((prev) => [
+      ...prev,
+      {
+        ...defaultCustomerRoom,
+        id: Date.now(),
+        name: `Room ${prev.length + 1}`,
+      },
+    ]);
+  };
+
+  const removeCustomerRoom = (id) => {
+    setCustomerRooms((prev) => {
       if (prev.length === 1) return prev;
       return prev.filter((room) => room.id !== id);
     });
@@ -418,8 +464,7 @@ export default function Page() {
         getUnitPrice("midea", room.recommendedNumber) + pipeRunExtra;
 
       const zenBase = getUnitPrice("zen", room.recommendedNumber);
-      const zenUnitPrice =
-        zenBase === null ? null : zenBase + pipeRunExtra;
+      const zenUnitPrice = zenBase === null ? null : zenBase + pipeRunExtra;
 
       return {
         ...room,
@@ -445,10 +490,7 @@ export default function Page() {
       0
     );
     const zenAvailableRooms = groupedModels.filter((room) => room.zenUnitPrice !== null);
-    const zenTotal = zenAvailableRooms.reduce(
-      (sum, room) => sum + room.zenUnitPrice,
-      0
-    );
+    const zenTotal = zenAvailableRooms.reduce((sum, room) => sum + room.zenUnitPrice, 0);
 
     return {
       roomResults: groupedModels,
@@ -510,9 +552,7 @@ export default function Page() {
           `${room.name}: ${room.mitsubishi} | Estimated installed price ${formatPrice(room.mitsubishiUnitPrice)}`
         );
       });
-      lines.push(
-        `Estimated installed total: ${formatPrice(result.mitsubishiTotal)}`
-      );
+      lines.push(`Estimated installed total: ${formatPrice(result.mitsubishiTotal)}`);
       lines.push("");
     }
 
@@ -551,7 +591,7 @@ export default function Page() {
     }
 
     lines.push(
-      "Guide prices only. Final pricing depends on pipe run, trunking, access, electrics, condensate route, outdoor locations and overall install difficulty."
+      "Guide prices only. Final pricing depends on pipe run, trunking, access, electrics, condensate route and outdoor layout."
     );
 
     return lines.join("\n");
@@ -620,6 +660,14 @@ export default function Page() {
     return lines.join("\n");
   }, [brandPreference, result]);
 
+  const customerRoomSummary = useMemo(() => {
+    const lines = customerRooms.map((room, index) => {
+      return `${index + 1}. ${room.name}: ${room.length}m x ${room.width}m x ${room.height}m | Room type: ${room.roomType} | Glazing: ${room.glazing} | Sun exposure: ${room.exposure} | Floor: ${getFloorLabel(room.floorLevel)} | Outdoor position: ${getOutdoorSideLabel(room.outdoorSide)}`;
+    });
+
+    return lines.join("\n");
+  }, [customerRooms]);
+
   const handleCopySummary = async () => {
     try {
       await navigator.clipboard.writeText(summary);
@@ -657,446 +705,732 @@ export default function Page() {
             <span style={{ color: "#0b2e73" }}>AIR</span>
           </h1>
           <p style={{ marginTop: "8px", fontSize: "20px", color: "#ffffff" }}>
-            Climate Control Multi-Room Sizer
+            Climate Control Survey Tool
           </p>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.1fr 0.9fr",
-            gap: "28px",
-          }}
-        >
+        <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+          <button
+            onClick={() => setViewMode("customer")}
+            style={{
+              ...tabButtonStyle,
+              background: viewMode === "customer" ? "#0b2e73" : "#cbd5e1",
+              color: viewMode === "customer" ? "white" : "#0b1b3a",
+            }}
+          >
+            Customer estimate form
+          </button>
+          <button
+            onClick={() => setViewMode("installer")}
+            style={{
+              ...tabButtonStyle,
+              background: viewMode === "installer" ? "#0b2e73" : "#cbd5e1",
+              color: viewMode === "installer" ? "white" : "#0b1b3a",
+            }}
+          >
+            Installer tool
+          </button>
+        </div>
+
+        {viewMode === "customer" ? (
           <div
             style={{
               background: "#f3f3f3",
               color: "#0b1b3a",
               borderRadius: "24px",
               padding: "26px",
+            }}
+          >
+            <h2 style={{ fontSize: "32px", marginTop: 0 }}>Get an estimate</h2>
+            <p style={{ color: "#475569", marginTop: 0 }}>
+              Fill in the details below and ProAir will review your enquiry and get back to you.
+            </p>
+
+            <form
+              action="https://formsubmit.co/contact@proairuk.co.uk"
+              method="POST"
+            >
+              <input type="hidden" name="_subject" value="New ProAir estimate request" />
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="Room summary" value={customerRoomSummary} />
+
+              <div style={twoColGridStyle}>
+                <div>
+                  <label>Full name</label>
+                  <input
+                    type="text"
+                    name="Full name"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    style={inputStyle}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Phone number</label>
+                  <input
+                    type="text"
+                    name="Phone number"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    style={inputStyle}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={twoColGridStyle}>
+                <div>
+                  <label>Email address</label>
+                  <input
+                    type="email"
+                    name="Email"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    style={inputStyle}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Postcode</label>
+                  <input
+                    type="text"
+                    name="Postcode"
+                    value={customerPostcode}
+                    onChange={(e) => setCustomerPostcode(e.target.value)}
+                    style={inputStyle}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "16px",
+                  marginTop: "12px",
+                }}
+              >
+                <h3 style={{ fontSize: "24px", margin: 0 }}>Rooms</h3>
+                <button
+                  type="button"
+                  onClick={addCustomerRoom}
+                  style={smallButtonStyle}
+                >
+                  Add room
+                </button>
+              </div>
+
+              {customerRooms.map((room) => (
+                <div key={room.id} style={roomCardStyle}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <input
+                      value={room.name}
+                      onChange={(e) =>
+                        updateCustomerRoom(room.id, "name", e.target.value)
+                      }
+                      style={{ ...inputStyle, marginBottom: 0, fontWeight: 700 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeCustomerRoom(room.id)}
+                      style={{
+                        ...smallButtonStyle,
+                        opacity: customerRooms.length === 1 ? 0.5 : 1,
+                      }}
+                      disabled={customerRooms.length === 1}
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Length (m)</label>
+                      <input
+                        type="number"
+                        value={room.length}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "length", Number(e.target.value))
+                        }
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label>Width (m)</label>
+                      <input
+                        type="number"
+                        value={room.width}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "width", Number(e.target.value))
+                        }
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Ceiling height (m)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={room.height}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "height", Number(e.target.value))
+                        }
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label>Room type</label>
+                      <select
+                        value={room.roomType}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "roomType", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="bedroom">Bedroom</option>
+                        <option value="living">Living room</option>
+                        <option value="office">Office</option>
+                        <option value="garden_room">Garden room</option>
+                        <option value="kitchen">Kitchen</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Glazing</label>
+                      <select
+                        value={room.glazing}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "glazing", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="very_high">Very high / bifolds</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>Sun exposure</label>
+                      <select
+                        value={room.exposure}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "exposure", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="north">North</option>
+                        <option value="east">East</option>
+                        <option value="west">West</option>
+                        <option value="south">South</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Floor level</label>
+                      <select
+                        value={room.floorLevel}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "floorLevel", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="ground">Ground floor</option>
+                        <option value="first">First floor</option>
+                        <option value="loft">Loft / second floor</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>Best outdoor unit position</label>
+                      <select
+                        value={room.outdoorSide}
+                        onChange={(e) =>
+                          updateCustomerRoom(room.id, "outdoorSide", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="same_side">Same side as room</option>
+                        <option value="front">Front of property</option>
+                        <option value="rear">Rear of property</option>
+                        <option value="side">Side elevation</option>
+                        <option value="opposite_side">Opposite side of property</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <label>Anything else we should know?</label>
+              <textarea
+                name="Customer notes"
+                value={customerNotes}
+                onChange={(e) => setCustomerNotes(e.target.value)}
+                style={textAreaStyle}
+                rows={5}
+                placeholder="e.g. customer prefers rear garden location, wants neat trunking, outdoor needs to be discreet..."
+              />
+
+              <button type="submit" style={buttonStyle}>
+                Send estimate request
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1.1fr 0.9fr",
+              gap: "28px",
             }}
           >
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "16px",
+                background: "#f3f3f3",
+                color: "#0b1b3a",
+                borderRadius: "24px",
+                padding: "26px",
               }}
             >
-              <h2 style={{ fontSize: "32px", marginTop: 0, marginBottom: "12px" }}>
-                Rooms
-              </h2>
-              <button onClick={addRoom} style={smallButtonStyle}>
-                Add room
-              </button>
-            </div>
-
-            {rooms.map((room) => (
-              <div key={room.id} style={roomCardStyle}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "12px",
-                  }}
-                >
-                  <input
-                    value={room.name}
-                    onChange={(e) => updateRoom(room.id, "name", e.target.value)}
-                    style={{ ...inputStyle, marginBottom: 0, fontWeight: 700 }}
-                  />
-                  <button
-                    onClick={() => removeRoom(room.id)}
-                    style={{
-                      ...smallButtonStyle,
-                      opacity: rooms.length === 1 ? 0.5 : 1,
-                    }}
-                    disabled={rooms.length === 1}
-                  >
-                    Remove
-                  </button>
-                </div>
-
-                <div style={twoColGridStyle}>
-                  <div>
-                    <label>Length (m)</label>
-                    <input
-                      type="number"
-                      value={room.length}
-                      onChange={(e) =>
-                        updateRoom(room.id, "length", Number(e.target.value))
-                      }
-                      style={inputStyle}
-                    />
-                  </div>
-                  <div>
-                    <label>Width (m)</label>
-                    <input
-                      type="number"
-                      value={room.width}
-                      onChange={(e) =>
-                        updateRoom(room.id, "width", Number(e.target.value))
-                      }
-                      style={inputStyle}
-                    />
-                  </div>
-                </div>
-
-                <div style={twoColGridStyle}>
-                  <div>
-                    <label>Ceiling height (m)</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={room.height}
-                      onChange={(e) =>
-                        updateRoom(room.id, "height", Number(e.target.value))
-                      }
-                      style={inputStyle}
-                    />
-                  </div>
-                  <div>
-                    <label>Room type</label>
-                    <select
-                      value={room.roomType}
-                      onChange={(e) =>
-                        updateRoom(room.id, "roomType", e.target.value)
-                      }
-                      style={inputStyle}
-                    >
-                      <option value="bedroom">Bedroom</option>
-                      <option value="living">Living room</option>
-                      <option value="office">Office</option>
-                      <option value="garden_room">Garden room</option>
-                      <option value="kitchen">Kitchen</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={twoColGridStyle}>
-                  <div>
-                    <label>Glazing</label>
-                    <select
-                      value={room.glazing}
-                      onChange={(e) =>
-                        updateRoom(room.id, "glazing", e.target.value)
-                      }
-                      style={inputStyle}
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                      <option value="very_high">Very high / bifolds</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label>Sun exposure</label>
-                    <select
-                      value={room.exposure}
-                      onChange={(e) =>
-                        updateRoom(room.id, "exposure", e.target.value)
-                      }
-                      style={inputStyle}
-                    >
-                      <option value="north">North</option>
-                      <option value="east">East</option>
-                      <option value="west">West</option>
-                      <option value="south">South</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={twoColGridStyle}>
-                  <div>
-                    <label>Estimated pipe run</label>
-                    <select
-                      value={room.pipeRun}
-                      onChange={(e) =>
-                        updateRoom(room.id, "pipeRun", e.target.value)
-                      }
-                      style={inputStyle}
-                    >
-                      <option value="standard">Up to 3m</option>
-                      <option value="medium">3m to 5m</option>
-                      <option value="long">5m to 7m</option>
-                      <option value="very_long">7m+</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label>Floor level</label>
-                    <select
-                      value={room.floorLevel}
-                      onChange={(e) =>
-                        updateRoom(room.id, "floorLevel", e.target.value)
-                      }
-                      style={inputStyle}
-                    >
-                      <option value="ground">Ground floor</option>
-                      <option value="first">First floor</option>
-                      <option value="loft">Loft / second floor</option>
-                    </select>
-                  </div>
-                </div>
-
-                <label>Outdoor unit side / likely position</label>
-                <select
-                  value={room.outdoorSide}
-                  onChange={(e) =>
-                    updateRoom(room.id, "outdoorSide", e.target.value)
-                  }
-                  style={inputStyle}
-                >
-                  <option value="same_side">Same side as room</option>
-                  <option value="front">Front of property</option>
-                  <option value="rear">Rear of property</option>
-                  <option value="side">Side elevation</option>
-                  <option value="opposite_side">Opposite side of property</option>
-                </select>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "16px",
+                }}
+              >
+                <h2 style={{ fontSize: "32px", marginTop: 0, marginBottom: "12px" }}>
+                  Rooms
+                </h2>
+                <button onClick={addRoom} style={smallButtonStyle}>
+                  Add room
+                </button>
               </div>
-            ))}
 
-            <h3 style={{ marginTop: "24px", marginBottom: "12px", fontSize: "24px" }}>
-              Project setup
-            </h3>
+              {rooms.map((room) => (
+                <div key={room.id} style={roomCardStyle}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <input
+                      value={room.name}
+                      onChange={(e) => updateRoom(room.id, "name", e.target.value)}
+                      style={{ ...inputStyle, marginBottom: 0, fontWeight: 700 }}
+                    />
+                    <button
+                      onClick={() => removeRoom(room.id)}
+                      style={{
+                        ...smallButtonStyle,
+                        opacity: rooms.length === 1 ? 0.5 : 1,
+                      }}
+                      disabled={rooms.length === 1}
+                    >
+                      Remove
+                    </button>
+                  </div>
 
-            <label>System type</label>
-            <select
-              value={systemType}
-              onChange={(e) => setSystemType(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="wall">Wall mounted</option>
-              <option value="cassette">Cassette</option>
-              <option value="ducted">Ducted</option>
-            </select>
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Length (m)</label>
+                      <input
+                        type="number"
+                        value={room.length}
+                        onChange={(e) =>
+                          updateRoom(room.id, "length", Number(e.target.value))
+                        }
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label>Width (m)</label>
+                      <input
+                        type="number"
+                        value={room.width}
+                        onChange={(e) =>
+                          updateRoom(room.id, "width", Number(e.target.value))
+                        }
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
 
-            <label>Preferred brand / quote mode</label>
-            <select
-              value={brandPreference}
-              onChange={(e) => setBrandPreference(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="both">Show both standard options</option>
-              <option value="mitsubishi">Mitsubishi Electric only</option>
-              <option value="midea">Midea only</option>
-              <option value="zen">Mitsubishi Zen premium upgrade</option>
-            </select>
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Ceiling height (m)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={room.height}
+                        onChange={(e) =>
+                          updateRoom(room.id, "height", Number(e.target.value))
+                        }
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label>Room type</label>
+                      <select
+                        value={room.roomType}
+                        onChange={(e) =>
+                          updateRoom(room.id, "roomType", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="bedroom">Bedroom</option>
+                        <option value="living">Living room</option>
+                        <option value="office">Office</option>
+                        <option value="garden_room">Garden room</option>
+                        <option value="kitchen">Kitchen</option>
+                      </select>
+                    </div>
+                  </div>
 
-            <label>Room spread / property layout</label>
-            <select
-              value={roomSpread}
-              onChange={(e) => setRoomSpread(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="same_side">Same side of house</option>
-              <option value="adjacent">Adjacent / close together</option>
-              <option value="opposite_sides">Opposite sides of house</option>
-              <option value="different_floors">Different floors</option>
-              <option value="spread_out">Spread across property</option>
-            </select>
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Glazing</label>
+                      <select
+                        value={room.glazing}
+                        onChange={(e) =>
+                          updateRoom(room.id, "glazing", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="very_high">Very high / bifolds</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>Sun exposure</label>
+                      <select
+                        value={room.exposure}
+                        onChange={(e) =>
+                          updateRoom(room.id, "exposure", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="north">North</option>
+                        <option value="east">East</option>
+                        <option value="west">West</option>
+                        <option value="south">South</option>
+                      </select>
+                    </div>
+                  </div>
 
-            <label>Outdoor unit preference</label>
-            <select
-              value={outdoorPreference}
-              onChange={(e) => setOutdoorPreference(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="best_layout">Best layout wins</option>
-              <option value="single">Single outdoor preferred</option>
-              <option value="multiple">Happy with multiple outdoor units</option>
-            </select>
+                  <div style={twoColGridStyle}>
+                    <div>
+                      <label>Estimated pipe run</label>
+                      <select
+                        value={room.pipeRun}
+                        onChange={(e) =>
+                          updateRoom(room.id, "pipeRun", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="standard">Up to 3m</option>
+                        <option value="medium">3m to 5m</option>
+                        <option value="long">5m to 7m</option>
+                        <option value="very_long">7m+</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>Floor level</label>
+                      <select
+                        value={room.floorLevel}
+                        onChange={(e) =>
+                          updateRoom(room.id, "floorLevel", e.target.value)
+                        }
+                        style={inputStyle}
+                      >
+                        <option value="ground">Ground floor</option>
+                        <option value="first">First floor</option>
+                        <option value="loft">Loft / second floor</option>
+                      </select>
+                    </div>
+                  </div>
 
-            <label>Survey notes</label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. front bedroom opposite to rear office, customer wants minimal trunking, garden room may suit separate outdoor unit..."
-              style={textAreaStyle}
-              rows={5}
-            />
-          </div>
-
-          <div
-            style={{
-              background: "#f3f3f3",
-              color: "#0b1b3a",
-              borderRadius: "24px",
-              padding: "26px",
-            }}
-          >
-            <h2 style={{ fontSize: "32px", marginTop: 0 }}>Project result</h2>
-
-            <p>
-              <strong>Total estimated load:</strong> {result.totalLoad} kW
-            </p>
-            <p>
-              <strong>Total recommended connected capacity:</strong>{" "}
-              {result.totalRecommended} kW
-            </p>
-            <p>
-              <strong>Suggested system type:</strong> {result.systemLabel}
-            </p>
-
-            <div style={resultCardStyle}>
-              <p style={{ marginTop: 0, fontWeight: 700 }}>Room breakdown</p>
-              {result.roomResults.map((room) => (
-                <div
-                  key={room.id}
-                  style={{
-                    paddingBottom: "12px",
-                    marginBottom: "12px",
-                    borderBottom: "1px solid #cfd8e3",
-                  }}
-                >
-                  <p style={{ margin: 0, fontWeight: 700 }}>{room.name}</p>
-                  <p style={{ margin: "6px 0 0 0" }}>
-                    {room.area}m² • Load {room.kw}kW • Suggested {room.recommended}kW
-                  </p>
-                  <p style={{ margin: "6px 0 0 0", color: "#475569" }}>
-                    {room.floorLabel} • Outdoor {room.outdoorSideLabel}
-                  </p>
-                  <p style={{ margin: "6px 0 0 0", color: "#475569" }}>
-                    Pipe run: {room.pipeRunLabel}{" "}
-                    {room.pipeRunExtra > 0 ? `(+${formatPrice(room.pipeRunExtra)})` : ""}
-                  </p>
+                  <label>Outdoor unit side / likely position</label>
+                  <select
+                    value={room.outdoorSide}
+                    onChange={(e) =>
+                      updateRoom(room.id, "outdoorSide", e.target.value)
+                    }
+                    style={inputStyle}
+                  >
+                    <option value="same_side">Same side as room</option>
+                    <option value="front">Front of property</option>
+                    <option value="rear">Rear of property</option>
+                    <option value="side">Side elevation</option>
+                    <option value="opposite_side">Opposite side of property</option>
+                  </select>
                 </div>
               ))}
-            </div>
 
-            <div style={resultCardStyle}>
-              <p style={{ marginTop: 0, fontWeight: 700 }}>Outdoor unit suggestion</p>
-              <p style={{ marginBottom: 0 }}>{result.outdoorSuggestion}</p>
-            </div>
+              <h3 style={{ marginTop: "24px", marginBottom: "12px", fontSize: "24px" }}>
+                Project setup
+              </h3>
 
-            <div style={resultCardStyle}>
-              <p style={{ marginTop: 0, fontWeight: 700 }}>Possible system options</p>
-              <ul style={{ margin: 0, paddingLeft: "18px" }}>
-                {result.systemOptions.map((option, index) => (
-                  <li key={index} style={{ marginBottom: "8px" }}>
-                    {option}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {(brandPreference === "both" || brandPreference === "mitsubishi") && (
-              <div style={resultCardStyle}>
-                <p style={{ marginTop: 0, fontWeight: 700 }}>
-                  Suggested Mitsubishi Electric
-                </p>
-                {result.roomResults.map((room) => (
-                  <div key={room.id} style={{ marginBottom: "10px" }}>
-                    <p style={{ margin: "0 0 4px 0" }}>
-                      <strong>{room.name}:</strong> {room.mitsubishi}
-                    </p>
-                    <p style={{ margin: 0, color: "#475569" }}>
-                      Estimated installed price: {formatPrice(room.mitsubishiUnitPrice)}
-                    </p>
-                  </div>
-                ))}
-                <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
-                  Estimated installed total: {formatPrice(result.mitsubishiTotal)}
-                </p>
-              </div>
-            )}
-
-            {(brandPreference === "both" || brandPreference === "midea") && (
-              <div style={resultCardStyle}>
-                <p style={{ marginTop: 0, fontWeight: 700 }}>Suggested Midea</p>
-                {result.roomResults.map((room) => (
-                  <div key={room.id} style={{ marginBottom: "10px" }}>
-                    <p style={{ margin: "0 0 4px 0" }}>
-                      <strong>{room.name}:</strong> {room.midea}
-                    </p>
-                    <p style={{ margin: 0, color: "#475569" }}>
-                      Estimated installed price: {formatPrice(room.mideaUnitPrice)}
-                    </p>
-                  </div>
-                ))}
-                <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
-                  Estimated installed total: {formatPrice(result.mideaTotal)}
-                </p>
-              </div>
-            )}
-
-            {(brandPreference === "both" || brandPreference === "zen") && (
-              <div style={resultCardStyle}>
-                <p style={{ marginTop: 0, fontWeight: 700 }}>
-                  Mitsubishi Zen premium upgrade
-                </p>
-                {result.roomResults.map((room) => (
-                  <div key={room.id} style={{ marginBottom: "10px" }}>
-                    <p style={{ margin: "0 0 4px 0" }}>
-                      <strong>{room.name}:</strong> {room.zen}
-                    </p>
-                    <p style={{ margin: 0, color: "#475569" }}>
-                      {room.zenUnitPrice !== null
-                        ? `Estimated installed price: ${formatPrice(room.zenUnitPrice)}`
-                        : "Zen not available for this size"}
-                    </p>
-                  </div>
-                ))}
-                {result.zenAvailableRooms.length > 0 && (
-                  <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
-                    Estimated installed total: {formatPrice(result.zenTotal)}
-                  </p>
-                )}
-              </div>
-            )}
-
-            <div style={resultCardStyle}>
-              <p style={{ marginTop: 0, fontWeight: 700 }}>Copy installer summary</p>
-              <pre
-                style={{
-                  whiteSpace: "pre-wrap",
-                  fontFamily: "Arial, sans-serif",
-                  fontSize: "14px",
-                  color: "#334155",
-                  marginBottom: "14px",
-                }}
+              <label>System type</label>
+              <select
+                value={systemType}
+                onChange={(e) => setSystemType(e.target.value)}
+                style={inputStyle}
               >
-                {summary}
-              </pre>
-              <button onClick={handleCopySummary} style={buttonStyle}>
-                {copied ? "Copied" : "Copy project summary"}
-              </button>
-            </div>
+                <option value="wall">Wall mounted</option>
+                <option value="cassette">Cassette</option>
+                <option value="ducted">Ducted</option>
+              </select>
 
-            <div style={resultCardStyle}>
-              <p style={{ marginTop: 0, fontWeight: 700 }}>WhatsApp quote message</p>
-              <pre
-                style={{
-                  whiteSpace: "pre-wrap",
-                  fontFamily: "Arial, sans-serif",
-                  fontSize: "14px",
-                  color: "#334155",
-                  marginBottom: "14px",
-                }}
+              <label>Preferred brand / quote mode</label>
+              <select
+                value={brandPreference}
+                onChange={(e) => setBrandPreference(e.target.value)}
+                style={inputStyle}
               >
-                {whatsappQuote}
-              </pre>
-              <button onClick={handleCopyWhatsAppQuote} style={buttonStyle}>
-                {quoteCopied ? "Copied" : "Copy WhatsApp quote"}
-              </button>
+                <option value="both">Show both standard options</option>
+                <option value="mitsubishi">Mitsubishi Electric only</option>
+                <option value="midea">Midea only</option>
+                <option value="zen">Mitsubishi Zen premium upgrade</option>
+              </select>
+
+              <label>Room spread / property layout</label>
+              <select
+                value={roomSpread}
+                onChange={(e) => setRoomSpread(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="same_side">Same side of house</option>
+                <option value="adjacent">Adjacent / close together</option>
+                <option value="opposite_sides">Opposite sides of house</option>
+                <option value="different_floors">Different floors</option>
+                <option value="spread_out">Spread across property</option>
+              </select>
+
+              <label>Outdoor unit preference</label>
+              <select
+                value={outdoorPreference}
+                onChange={(e) => setOutdoorPreference(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="best_layout">Best layout wins</option>
+                <option value="single">Single outdoor preferred</option>
+                <option value="multiple">Happy with multiple outdoor units</option>
+              </select>
+
+              <label>Survey notes</label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="e.g. front bedroom opposite to rear office, customer wants minimal trunking, garden room may suit separate outdoor unit..."
+                style={textAreaStyle}
+                rows={5}
+              />
             </div>
 
-            <p
+            <div
               style={{
-                marginTop: "18px",
-                marginBottom: 0,
-                fontSize: "14px",
-                color: "#475569",
-                lineHeight: 1.5,
+                background: "#f3f3f3",
+                color: "#0b1b3a",
+                borderRadius: "24px",
+                padding: "26px",
               }}
             >
-              Guide prices only. Final pricing should still be adjusted for pipe run,
-              brackets, trunking, access, electrical work, condensate route, outdoor
-              locations and overall install difficulty.
-            </p>
+              <h2 style={{ fontSize: "32px", marginTop: 0 }}>Project result</h2>
+
+              <p>
+                <strong>Total estimated load:</strong> {result.totalLoad} kW
+              </p>
+              <p>
+                <strong>Total recommended connected capacity:</strong>{" "}
+                {result.totalRecommended} kW
+              </p>
+              <p>
+                <strong>Suggested system type:</strong> {result.systemLabel}
+              </p>
+
+              <div style={resultCardStyle}>
+                <p style={{ marginTop: 0, fontWeight: 700 }}>Room breakdown</p>
+                {result.roomResults.map((room) => (
+                  <div
+                    key={room.id}
+                    style={{
+                      paddingBottom: "12px",
+                      marginBottom: "12px",
+                      borderBottom: "1px solid #cfd8e3",
+                    }}
+                  >
+                    <p style={{ margin: 0, fontWeight: 700 }}>{room.name}</p>
+                    <p style={{ margin: "6px 0 0 0" }}>
+                      {room.area}m² • Load {room.kw}kW • Suggested {room.recommended}kW
+                    </p>
+                    <p style={{ margin: "6px 0 0 0", color: "#475569" }}>
+                      {room.floorLabel} • Outdoor {room.outdoorSideLabel}
+                    </p>
+                    <p style={{ margin: "6px 0 0 0", color: "#475569" }}>
+                      Pipe run: {room.pipeRunLabel}{" "}
+                      {room.pipeRunExtra > 0 ? `(+${formatPrice(room.pipeRunExtra)})` : ""}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div style={resultCardStyle}>
+                <p style={{ marginTop: 0, fontWeight: 700 }}>Outdoor unit suggestion</p>
+                <p style={{ marginBottom: 0 }}>{result.outdoorSuggestion}</p>
+              </div>
+
+              <div style={resultCardStyle}>
+                <p style={{ marginTop: 0, fontWeight: 700 }}>Possible system options</p>
+                <ul style={{ margin: 0, paddingLeft: "18px" }}>
+                  {result.systemOptions.map((option, index) => (
+                    <li key={index} style={{ marginBottom: "8px" }}>
+                      {option}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {(brandPreference === "both" || brandPreference === "mitsubishi") && (
+                <div style={resultCardStyle}>
+                  <p style={{ marginTop: 0, fontWeight: 700 }}>
+                    Suggested Mitsubishi Electric
+                  </p>
+                  {result.roomResults.map((room) => (
+                    <div key={room.id} style={{ marginBottom: "10px" }}>
+                      <p style={{ margin: "0 0 4px 0" }}>
+                        <strong>{room.name}:</strong> {room.mitsubishi}
+                      </p>
+                      <p style={{ margin: 0, color: "#475569" }}>
+                        Estimated installed price: {formatPrice(room.mitsubishiUnitPrice)}
+                      </p>
+                    </div>
+                  ))}
+                  <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
+                    Estimated installed total: {formatPrice(result.mitsubishiTotal)}
+                  </p>
+                </div>
+              )}
+
+              {(brandPreference === "both" || brandPreference === "midea") && (
+                <div style={resultCardStyle}>
+                  <p style={{ marginTop: 0, fontWeight: 700 }}>Suggested Midea</p>
+                  {result.roomResults.map((room) => (
+                    <div key={room.id} style={{ marginBottom: "10px" }}>
+                      <p style={{ margin: "0 0 4px 0" }}>
+                        <strong>{room.name}:</strong> {room.midea}
+                      </p>
+                      <p style={{ margin: 0, color: "#475569" }}>
+                        Estimated installed price: {formatPrice(room.mideaUnitPrice)}
+                      </p>
+                    </div>
+                  ))}
+                  <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
+                    Estimated installed total: {formatPrice(result.mideaTotal)}
+                  </p>
+                </div>
+              )}
+
+              {(brandPreference === "both" || brandPreference === "zen") && (
+                <div style={resultCardStyle}>
+                  <p style={{ marginTop: 0, fontWeight: 700 }}>
+                    Mitsubishi Zen premium upgrade
+                  </p>
+                  {result.roomResults.map((room) => (
+                    <div key={room.id} style={{ marginBottom: "10px" }}>
+                      <p style={{ margin: "0 0 4px 0" }}>
+                        <strong>{room.name}:</strong> {room.zen}
+                      </p>
+                      <p style={{ margin: 0, color: "#475569" }}>
+                        {room.zenUnitPrice !== null
+                          ? `Estimated installed price: ${formatPrice(room.zenUnitPrice)}`
+                          : "Zen not available for this size"}
+                      </p>
+                    </div>
+                  ))}
+                  {result.zenAvailableRooms.length > 0 && (
+                    <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
+                      Estimated installed total: {formatPrice(result.zenTotal)}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div style={resultCardStyle}>
+                <p style={{ marginTop: 0, fontWeight: 700 }}>Copy installer summary</p>
+                <pre
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    fontFamily: "Arial, sans-serif",
+                    fontSize: "14px",
+                    color: "#334155",
+                    marginBottom: "14px",
+                  }}
+                >
+                  {summary}
+                </pre>
+                <button onClick={handleCopySummary} style={buttonStyle}>
+                  {copied ? "Copied" : "Copy project summary"}
+                </button>
+              </div>
+
+              <div style={resultCardStyle}>
+                <p style={{ marginTop: 0, fontWeight: 700 }}>WhatsApp quote message</p>
+                <pre
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    fontFamily: "Arial, sans-serif",
+                    fontSize: "14px",
+                    color: "#334155",
+                    marginBottom: "14px",
+                  }}
+                >
+                  {whatsappQuote}
+                </pre>
+                <button onClick={handleCopyWhatsAppQuote} style={buttonStyle}>
+                  {quoteCopied ? "Copied" : "Copy WhatsApp quote"}
+                </button>
+              </div>
+
+              <p
+                style={{
+                  marginTop: "18px",
+                  marginBottom: 0,
+                  fontSize: "14px",
+                  color: "#475569",
+                  lineHeight: 1.5,
+                }}
+              >
+                Guide prices only. Final pricing should still be adjusted for pipe run,
+                brackets, trunking, access, electrical work, condensate route and outdoor
+                layout.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -1148,6 +1482,15 @@ const smallButtonStyle = {
   fontWeight: 700,
   cursor: "pointer",
   whiteSpace: "nowrap",
+};
+
+const tabButtonStyle = {
+  border: "none",
+  borderRadius: "12px",
+  padding: "14px 18px",
+  fontSize: "15px",
+  fontWeight: 700,
+  cursor: "pointer",
 };
 
 const roomCardStyle = {
