@@ -1409,13 +1409,10 @@ Can I get a quote / site survey please?`)}`}
         <strong>Mitsubishi Zen premium guide price:</strong> £
           {customerEstimate.zenTotal.toLocaleString()}
       </p>
-    )}
-
-    </div>
+     )}
 
     <p style={{ fontSize: "13px", color: "#475569" }}>
       Guide price only. Final cost depends on pipe runs, electrics, access and
-      installation layout.
     </p>
 
     <button type="submit" style={buttonStyle}>
