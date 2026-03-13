@@ -1047,16 +1047,18 @@ const roomBreakdown = customerRooms
     marginBottom: "20px",
   }}
 >
-  <h3 style={{ marginTop: 0 }}>Recommended systems & guide price</h3>
+<h3 style={{ marginTop: 0 }}>Recommended systems & guide price</h3>
+
 {customerDetailsComplete ? (
-<div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "18px",
-    marginBottom: "20px",
-  }}
->
+  <>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+        gap: "18px",
+        marginBottom: "20px",
+      }}
+    >
   <div
   onClick={() => {
   setSelectedCustomerSystem("midea");
@@ -1352,7 +1354,10 @@ const roomBreakdown = customerRooms
   </div>
 </div>
 <a
-  href={`https://wa.me/447833679777?text=${encodeURIComponent(`Hi ProAir, I used your estimator.
+     </div>
+
+    <a
+      href={`https://wa.me/447833679777?text=${encodeURIComponent(`Hi ProAir, I used your estimator.
 
 Selected system: ${systemNames[selectedCustomerSystem]}
 Number of rooms: ${customerRooms.length}
@@ -1361,87 +1366,72 @@ ${roomBreakdown}
 Estimated cooling load: ${customerEstimate.totalLoad} kW
 Suggested total capacity: ${customerEstimate.totalRecommended} kW
 Guide price: ${
-  selectedCustomerSystem === "midea"
-    ? `£${customerEstimate.mideaTotal.toLocaleString()}`
-    : selectedCustomerSystem === "zen"
-    ? `£${customerEstimate.zenTotal.toLocaleString()}`
-    : `£${customerEstimate.mitsubishiTotal.toLocaleString()}`
-}
+        selectedCustomerSystem === "midea"
+          ? `£${customerEstimate.mideaTotal.toLocaleString()}`
+          : selectedCustomerSystem === "zen"
+          ? `£${customerEstimate.zenTotal.toLocaleString()}`
+          : `£${customerEstimate.mitsubishiTotal.toLocaleString()}`
+      }
 
 Can I get a quote / site survey please?`)}`}
-  target="_blank"
-  rel="noreferrer"
-  style={{
-    display: "inline-block",
-    marginTop: "16px",
-    marginBottom: "20px",
-    background: "#25D366",
-    color: "white",
-    textDecoration: "none",
-    padding: "12px 18px",
-    borderRadius: "12px",
-    fontWeight: 700,
-  }}
->
-  Send this estimate on WhatsApp
-</a>
-<p>
-  <strong>Total estimated cooling load:</strong>{" "}
-  {customerEstimate.totalLoad} kW
-</p>
+      target="_blank"
+      rel="noreferrer"
+      style={{
+        display: "inline-block",
+        marginTop: "16px",
+        marginBottom: "20px",
+        background: "#25D366",
+        color: "white",
+        textDecoration: "none",
+        padding: "12px 18px",
+        borderRadius: "12px",
+        fontWeight: 700,
+      }}
+    >
+      Send this estimate on WhatsApp
+    </a>
 
-<p>
-  <strong>Midea system guide price:</strong> £
-  {customerEstimate.mideaTotal.toLocaleString()}
-</p>
-
-<p>
-  <strong>Mitsubishi Electric guide price:</strong> £
-  {customerEstimate.mitsubishiTotal.toLocaleString()}
-</p>
-
-{customerEstimate.zenTotal > 0 && (
-  <p>
-    <strong>Mitsubishi Zen premium guide price:</strong> £
-    {customerEstimate.zenTotal.toLocaleString()}
-  </p>
-)}
-  <p>
-    <strong>Midea system guide price:</strong> £
-    {customerEstimate.mideaTotal.toLocaleString()}
-  </p>
-
-  <p>
-    <strong>Mitsubishi Electric guide price:</strong> £
-    {customerEstimate.mitsubishiTotal.toLocaleString()}
-  </p>
-
-  {customerEstimate.zenTotal > 0 && (
     <p>
-      <strong>Mitsubishi Zen premium guide price:</strong> £
-      {customerEstimate.zenTotal.toLocaleString()}
+      <strong>Total estimated cooling load:</strong>{" "}
+      {customerEstimate.totalLoad} kW
     </p>
-  )}
 
-  <p style={{ fontSize: "13px", color: "#475569" }}>
-    Guide price only. Final cost depends on pipe runs, electrics, access and
-    installation layout.
-  </p>
-</div>
+    <p>
+      <strong>Midea system guide price:</strong> £
+      {customerEstimate.mideaTotal.toLocaleString()}
+    </p>
+
+    <p>
+      <strong>Mitsubishi Electric guide price:</strong> £
+      {customerEstimate.mitsubishiTotal.toLocaleString()}
+    </p>
+
+    {customerEstimate.zenTotal > 0 && (
+      <p>
+        <strong>Mitsubishi Zen premium guide price:</strong> £
+        {customerEstimate.zenTotal.toLocaleString()}
+      </p>
+    )}
+
+    <p style={{ fontSize: "13px", color: "#475569" }}>
+      Guide price only. Final cost depends on pipe runs, electrics, access and
+      installation layout.
+    </p>
+  </>
 ) : (
-<div
-  style={{
-    textAlign: "center",
-    padding: "28px",
-    background: "#f1f5f9",
-    borderRadius: "12px",
-    marginBottom: "20px",
-    color: "#475569",
-    fontWeight: 500
-  }}
->
-  Enter your contact details above to unlock system recommendations and guide pricing.
-</div>
+  <div
+    style={{
+      textAlign: "center",
+      padding: "28px",
+      background: "#f1f5f9",
+      borderRadius: "12px",
+      marginBottom: "20px",
+      color: "#475569",
+      fontWeight: 500,
+    }}
+  >
+    Enter your contact details above to unlock system recommendations and guide pricing.
+  </div>
 )}
 
               <button type="submit" style={buttonStyle}>
