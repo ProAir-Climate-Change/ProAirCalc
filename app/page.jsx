@@ -1329,13 +1329,16 @@ const customerEstimate = useMemo(() => {
   const roomBreakdown = customerRooms
   .map(
     (room, index) =>
-      `${index + 1}. ${room.name || "Room"} – ${room.recommendedCapacity || room.capacity} kW`
+      `${index + 1}. ${room.name || "Room"} – ${
+        room.recommendedCapacity || room.capacity || "N/A"
+      } kW`
   )
   .join("\n");
-  const systemNames = {
+
+const systemNames = {
   midea: "Midea Solstice",
   mitsubishi: "Mitsubishi Electric AY",
-  zen: "Mitsubishi Electric Zen"
+  zen: "Mitsubishi Electric Zen",
 };
 <a
   href={`https://wa.me/447833679777?text=${encodeURIComponent(`Hi ProAir, I used your estimator.
