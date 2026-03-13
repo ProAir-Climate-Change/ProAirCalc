@@ -775,6 +775,7 @@ const customerEstimate = useMemo(() => {
               padding: "26px",
             }}
           >
+            <div id="customer-form-start"></div>
             <h2 style={{ fontSize: "32px", marginTop: 0 }}>Get an estimate</h2>
             <p style={{ color: "#475569", marginTop: 0 }}>
               Fill in the details below and ProAir will review your enquiry and get back to you.
@@ -789,7 +790,6 @@ const customerEstimate = useMemo(() => {
               <input type="hidden" name="_template" value="table" />
               <input type="hidden" name="Room summary" value={customerRoomSummary} />
               <input type="hidden" name="Selected system" value={selectedCustomerSystem} />
-              <div id="customer-form-start"></div>
               <div style={twoColGridStyle}>
                 <div>
                   <label>Full name</label>
