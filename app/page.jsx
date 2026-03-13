@@ -1056,6 +1056,57 @@ const customerEstimate = useMemo(() => {
         fontWeight: 700,
       }}
     >
+  <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "18px",
+    marginBottom: "20px",
+  }}
+>
+  <div
+    style={{
+      background: "#e9edf3",
+      borderRadius: "16px",
+      padding: "18px",
+      border: "2px solid #d6dde8",
+    }}
+  >
+    <div
+      style={{
+        height: "160px",
+        borderRadius: "12px",
+        background: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: "14px",
+        overflow: "hidden",
+      }}
+    >
+      <img
+        src="/midea-solstice.png"
+        alt="Midea Solstice"
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          objectFit: "contain",
+        }}
+      />
+    </div>
+
+    <p
+      style={{
+        display: "inline-block",
+        margin: "0 0 10px 0",
+        padding: "6px 10px",
+        borderRadius: "999px",
+        background: "#dbeafe",
+        color: "#1d4ed8",
+        fontSize: "12px",
+        fontWeight: 700,
+      }}
+    >
       Budget
     </p>
 
@@ -1084,25 +1135,27 @@ const customerEstimate = useMemo(() => {
     }}
   >
     <div
-  style={{
-    height: "160px",
-    borderRadius: "12px",
-    background: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "14px",
-  }}
->
-  <img
-    src="/midea-solstice.png"
-    style={{
-      maxWidth: "100%",
-      maxHeight: "100%",
-      objectFit: "contain"
-    }}
-  />
-</div>
+      style={{
+        height: "160px",
+        borderRadius: "12px",
+        background: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: "14px",
+        overflow: "hidden",
+      }}
+    >
+      <img
+        src="/mitsubishi-ay.png"
+        alt="Mitsubishi Electric AY"
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          objectFit: "contain",
+        }}
+      />
+    </div>
 
     <p
       style={{
@@ -1159,51 +1212,38 @@ const customerEstimate = useMemo(() => {
     }}
   >
     <div
-  style={{
-    height: "160px",
-    borderRadius: "12px",
-    background: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "14px",
-    overflow: "hidden"
-  }}
->
-  <img
-    src="/mitsubishi-ay.png"
-    alt="Mitsubishi Electric AY"
-    style={{
-      maxWidth: "100%",
-      maxHeight: "100%",
-      objectFit: "contain"
-    }}
-  />
-</div>
+      style={{
+        height: "160px",
+        borderRadius: "12px",
+        background: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: "14px",
+        overflow: "hidden",
       }}
     >
-    <div
-  style={{
-    height: "160px",
-    borderRadius: "12px",
-    background: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "14px",
-    overflow: "hidden"
-  }}
->
-  <img
-    src="/zen.jpg"
-    alt="Mitsubishi Zen"
-    style={{
-      maxWidth: "100%",
-      maxHeight: "100%",
-      objectFit: "contain"
-    }}
-  />
-</div>
+      <img
+        src="/zen.jpg"
+        alt="Mitsubishi Zen"
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          objectFit: "contain",
+        }}
+      />
+    </div>
+
+    <p
+      style={{
+        display: "inline-block",
+        margin: "0 0 10px 0",
+        padding: "6px 10px",
+        borderRadius: "999px",
+        background: "#ede9fe",
+        color: "#6d28d9",
+        fontSize: "12px",
+        fontWeight: 700,
       }}
     >
       Premium
