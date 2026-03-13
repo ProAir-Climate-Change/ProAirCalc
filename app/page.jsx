@@ -1077,7 +1077,6 @@ const customerEstimate = useMemo(() => {
       />
     </div>
 
-    <p
      {selectedCustomerSystem === "midea" && (
   <p
     style={{
@@ -1158,7 +1157,6 @@ const customerEstimate = useMemo(() => {
       />
     </div>
 
-    <p
       {selectedCustomerSystem === "mitsubishi" && (
   <p
     style={{
@@ -1255,9 +1253,7 @@ const customerEstimate = useMemo(() => {
       />
     </div>
 
-    <p
       {selectedCustomerSystem === "mitsubishi" && (
-  <p
     {selectedCustomerSystem === "zen" && (
   <p
     style={{
