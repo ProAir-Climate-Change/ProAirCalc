@@ -1011,37 +1011,54 @@ const customerEstimate = useMemo(() => {
                 </div>
               ))}
 
-              <label>Anything else we should know?</label>
-              <textarea
-                <div style={{
-  background:"#e9edf3",
-  borderRadius:"14px",
-  padding:"18px",
-  marginBottom:"20px"
-}}>
-  <h3 style={{marginTop:0}}>Guide estimate</h3>
+             <label>Anything else we should know?</label>
 
-  <p><strong>Total estimated cooling load:</strong> {customerEstimate.totalLoad} kW</p>
+<div
+  style={{
+    background: "#e9edf3",
+    borderRadius: "14px",
+    padding: "18px",
+    marginBottom: "20px",
+  }}
+>
+  <h3 style={{ marginTop: 0 }}>Guide estimate</h3>
 
-  <p><strong>Midea system guide price:</strong> £{customerEstimate.mideaTotal.toLocaleString()}</p>
+  <p>
+    <strong>Total estimated cooling load:</strong>{" "}
+    {customerEstimate.totalLoad} kW
+  </p>
 
-  <p><strong>Mitsubishi Electric guide price:</strong> £{customerEstimate.mitsubishiTotal.toLocaleString()}</p>
+  <p>
+    <strong>Midea system guide price:</strong> £
+    {customerEstimate.mideaTotal.toLocaleString()}
+  </p>
+
+  <p>
+    <strong>Mitsubishi Electric guide price:</strong> £
+    {customerEstimate.mitsubishiTotal.toLocaleString()}
+  </p>
 
   {customerEstimate.zenTotal > 0 && (
-    <p><strong>Mitsubishi Zen premium guide price:</strong> £{customerEstimate.zenTotal.toLocaleString()}</p>
+    <p>
+      <strong>Mitsubishi Zen premium guide price:</strong> £
+      {customerEstimate.zenTotal.toLocaleString()}
+    </p>
   )}
 
-  <p style={{fontSize:"13px",color:"#475569"}}>
-    Guide price only. Final cost depends on pipe runs, electrics, access and installation layout.
+  <p style={{ fontSize: "13px", color: "#475569" }}>
+    Guide price only. Final cost depends on pipe runs, electrics, access and
+    installation layout.
   </p>
 </div>
-                name="Customer notes"
-                value={customerNotes}
-                onChange={(e) => setCustomerNotes(e.target.value)}
-                style={textAreaStyle}
-                rows={5}
-                placeholder="e.g. customer prefers rear garden location, wants neat trunking, outdoor needs to be discreet..."
-              />
+
+<textarea
+  name="Customer notes"
+  value={customerNotes}
+  onChange={(e) => setCustomerNotes(e.target.value)}
+  style={textAreaStyle}
+  rows={5}
+  placeholder="e.g. customer prefers rear garden location, wants neat trunking, outdoor needs to be discreet..."
+/>
 
               <button type="submit" style={buttonStyle}>
                 Send estimate request
