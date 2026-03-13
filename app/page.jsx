@@ -790,7 +790,7 @@ const roomBreakdown = customerRooms
           </button>
         </div>
 
-        {viewMode === "customer" ? (
+        <>
           <div
             style={{
               background: "#f3f3f3",
@@ -1438,23 +1438,6 @@ Can I get a quote / site survey please?`)}`}
               </button>
             </form>
           </div>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1.1fr 0.9fr",
-              gap: "28px",
-            }}
-          >
-            <div
-              style={{
-                background: "#f3f3f3",
-                color: "#0b1b3a",
-                borderRadius: "24px",
-                padding: "26px",
-              }}
-            >
-              <div
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
