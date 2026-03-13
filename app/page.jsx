@@ -1048,7 +1048,8 @@ const roomBreakdown = customerRooms
   }}
 >
   <h3 style={{ marginTop: 0 }}>Guide estimate</h3>
-  <div
+{customerDetailsComplete ? (
+<div
   style={{
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
