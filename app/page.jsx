@@ -791,7 +791,6 @@ const customerEstimate = useMemo(() => {
               <input type="hidden" name="Selected system" value={selectedCustomerSystem} />
               <div id="customer-form-start"></div>
               <div style={twoColGridStyle}>
-              <div style={twoColGridStyle}>
                 <div>
                   <label>Full name</label>
                   <input
