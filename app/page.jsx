@@ -130,6 +130,7 @@ const defaultRoom = {
   roomType: "living",
   glazing: "medium",
   exposure: "south",
+  pipeRun: "standard",
 };
 
 function roundToRecommendedSize(kw) {
@@ -139,23 +140,25 @@ function roundToRecommendedSize(kw) {
   return unitSizes[unitSizes.length - 1];
 }
 
-function getPriceBand(brand, recommended, systemType) {
-  let uplift = 0;
-
-  if (systemType === "cassette") uplift = 250;
-  if (systemType === "ducted") uplift = 500;
-
+function getUnitPrice(brand, size) {
   if (brand === "mitsubishi") {
-    if (recommended <= 3.5) return { from: 1800 + uplift, to: 2000 + uplift };
-    if (recommended <= 5.0) return { from: 2400 + uplift, to: 2600 + uplift };
-    if (recommended <= 7.1) return { from: 3000 + uplift, to: 3300 + uplift };
-    return { from: 3500 + uplift, to: 4500 + uplift };
+    if (size <= 3.5) return 1800;
+    if (size <= 5.0) return 2400;
+    if (size <= 7.1) return 3000;
+    return 3500;
   }
 
-  if (recommended <= 3.5) return { from: 1500 + uplift, to: 1700 + uplift };
-  if (recommended <= 5.0) return { from: 2000 + uplift, to: 2200 + uplift };
-  if (recommended <= 7.1) return { from: 2600 + uplift, to: 2900 + uplift };
-  return { from: 3000 + uplift, to: 4000 + uplift };
+  if (size <= 3.5) return 1500;
+  if (size <= 5.0) return 2000;
+  if (size <= 7.1) return 2600;
+  return 3000;
+}
+
+function getPipeRunExtra(pipeRun) {
+  if (pipeRun === "medium") return 150;
+  if (pipeRun === "long") return 300;
+  if (pipeRun === "very_long") return 500;
+  return 0;
 }
 
 function formatPrice(value) {
@@ -172,6 +175,13 @@ function getSystemLabel(systemType) {
   if (systemType === "cassette") return "Cassette system";
   if (systemType === "ducted") return "Ducted system";
   return "Wall mounted split system";
+}
+
+function getPipeRunLabel(pipeRun) {
+  if (pipeRun === "medium") return "3m to 5m";
+  if (pipeRun === "long") return "5m to 7m";
+  if (pipeRun === "very_long") return "7m+";
+  return "Up to 3m";
 }
 
 function calculateRoom(room) {
@@ -255,7 +265,11 @@ function getSystemOptions(totalRecommended, roomCount, roomSpread, systemType) {
     options.push(`1 x multi-split system around ${Math.ceil(totalRecommended)}kW total connected load, subject to layout and pipe runs`);
   }
 
-  if (roomSpread === "opposite_sides" || roomSpread === "different_floors" || roomSpread === "spread_out") {
+  if (
+    roomSpread === "opposite_sides" ||
+    roomSpread === "different_floors" ||
+    roomSpread === "spread_out"
+  ) {
     options.push("Consider 2 outdoor units to reduce long runs and installation complexity");
   }
 
@@ -307,8 +321,6 @@ export default function Page() {
     );
 
     const selectedMap = getModelMapForSystem(systemType);
-    const mitsubishiPrice = getPriceBand("mitsubishi", totalRecommended, systemType);
-    const mideaPrice = getPriceBand("midea", totalRecommended, systemType);
 
     const groupedModels = roomResults.map((room) => {
       const models = selectedMap[room.recommendedNumber] || {
@@ -316,20 +328,39 @@ export default function Page() {
         midea: "No model mapped",
       };
 
+      const pipeRunExtra = getPipeRunExtra(room.pipeRun);
+      const mitsubishiUnitPrice =
+        getUnitPrice("mitsubishi", room.recommendedNumber) + pipeRunExtra;
+      const mideaUnitPrice =
+        getUnitPrice("midea", room.recommendedNumber) + pipeRunExtra;
+
       return {
         ...room,
         mitsubishi: models.mitsubishi,
         midea: models.midea,
+        pipeRunLabel: getPipeRunLabel(room.pipeRun),
+        pipeRunExtra,
+        mitsubishiUnitPrice,
+        mideaUnitPrice,
       };
     });
+
+    const mitsubishiTotal = groupedModels.reduce(
+      (sum, room) => sum + room.mitsubishiUnitPrice,
+      0
+    );
+    const mideaTotal = groupedModels.reduce(
+      (sum, room) => sum + room.mideaUnitPrice,
+      0
+    );
 
     return {
       roomResults: groupedModels,
       totalLoad: totalLoad.toFixed(2),
       totalRecommended: totalRecommended.toFixed(1),
       systemLabel: getSystemLabel(systemType),
-      mitsubishiPrice,
-      mideaPrice,
+      mitsubishiTotal,
+      mideaTotal,
       outdoorSuggestion: getOutdoorSuggestion(
         roomSpread,
         groupedModels.length,
@@ -357,7 +388,7 @@ export default function Page() {
 
     result.roomResults.forEach((room, index) => {
       lines.push(
-        `${index + 1}. ${room.name}: ${room.length}m x ${room.width}m x ${room.height}m | ${room.area}m² | Load ${room.kw}kW | Suggested ${room.recommended}kW`
+        `${index + 1}. ${room.name}: ${room.length}m x ${room.width}m x ${room.height}m | ${room.area}m² | Load ${room.kw}kW | Suggested ${room.recommended}kW | Pipe run ${room.pipeRunLabel}`
       );
     });
 
@@ -373,10 +404,12 @@ export default function Page() {
     if (brandPreference === "both" || brandPreference === "mitsubishi") {
       lines.push("Mitsubishi Electric room suggestions");
       result.roomResults.forEach((room) => {
-        lines.push(`${room.name}: ${room.mitsubishi}`);
+        lines.push(
+          `${room.name}: ${room.mitsubishi} | Estimated installed price ${formatPrice(room.mitsubishiUnitPrice)}`
+        );
       });
       lines.push(
-        `Estimated installed total: ${formatPrice(result.mitsubishiPrice.from)} to ${formatPrice(result.mitsubishiPrice.to)}`
+        `Estimated installed total: ${formatPrice(result.mitsubishiTotal)}`
       );
       lines.push("");
     }
@@ -384,11 +417,11 @@ export default function Page() {
     if (brandPreference === "both" || brandPreference === "midea") {
       lines.push("Midea room suggestions");
       result.roomResults.forEach((room) => {
-        lines.push(`${room.name}: ${room.midea}`);
+        lines.push(
+          `${room.name}: ${room.midea} | Estimated installed price ${formatPrice(room.mideaUnitPrice)}`
+        );
       });
-      lines.push(
-        `Estimated installed total: ${formatPrice(result.mideaPrice.from)} to ${formatPrice(result.mideaPrice.to)}`
-      );
+      lines.push(`Estimated installed total: ${formatPrice(result.mideaTotal)}`);
       lines.push("");
     }
 
@@ -451,14 +484,32 @@ export default function Page() {
               padding: "26px",
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
-              <h2 style={{ fontSize: "32px", marginTop: 0, marginBottom: "12px" }}>Rooms</h2>
-              <button onClick={addRoom} style={smallButtonStyle}>Add room</button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "16px",
+              }}
+            >
+              <h2 style={{ fontSize: "32px", marginTop: 0, marginBottom: "12px" }}>
+                Rooms
+              </h2>
+              <button onClick={addRoom} style={smallButtonStyle}>
+                Add room
+              </button>
             </div>
 
-            {rooms.map((room, index) => (
+            {rooms.map((room) => (
               <div key={room.id} style={roomCardStyle}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "12px",
+                  }}
+                >
                   <input
                     value={room.name}
                     onChange={(e) => updateRoom(room.id, "name", e.target.value)}
@@ -466,7 +517,10 @@ export default function Page() {
                   />
                   <button
                     onClick={() => removeRoom(room.id)}
-                    style={{ ...smallButtonStyle, opacity: rooms.length === 1 ? 0.5 : 1 }}
+                    style={{
+                      ...smallButtonStyle,
+                      opacity: rooms.length === 1 ? 0.5 : 1,
+                    }}
                     disabled={rooms.length === 1}
                   >
                     Remove
@@ -479,7 +533,9 @@ export default function Page() {
                     <input
                       type="number"
                       value={room.length}
-                      onChange={(e) => updateRoom(room.id, "length", Number(e.target.value))}
+                      onChange={(e) =>
+                        updateRoom(room.id, "length", Number(e.target.value))
+                      }
                       style={inputStyle}
                     />
                   </div>
@@ -488,7 +544,9 @@ export default function Page() {
                     <input
                       type="number"
                       value={room.width}
-                      onChange={(e) => updateRoom(room.id, "width", Number(e.target.value))}
+                      onChange={(e) =>
+                        updateRoom(room.id, "width", Number(e.target.value))
+                      }
                       style={inputStyle}
                     />
                   </div>
@@ -501,7 +559,9 @@ export default function Page() {
                       type="number"
                       step="0.1"
                       value={room.height}
-                      onChange={(e) => updateRoom(room.id, "height", Number(e.target.value))}
+                      onChange={(e) =>
+                        updateRoom(room.id, "height", Number(e.target.value))
+                      }
                       style={inputStyle}
                     />
                   </div>
@@ -509,7 +569,9 @@ export default function Page() {
                     <label>Room type</label>
                     <select
                       value={room.roomType}
-                      onChange={(e) => updateRoom(room.id, "roomType", e.target.value)}
+                      onChange={(e) =>
+                        updateRoom(room.id, "roomType", e.target.value)
+                      }
                       style={inputStyle}
                     >
                       <option value="bedroom">Bedroom</option>
@@ -526,7 +588,9 @@ export default function Page() {
                     <label>Glazing</label>
                     <select
                       value={room.glazing}
-                      onChange={(e) => updateRoom(room.id, "glazing", e.target.value)}
+                      onChange={(e) =>
+                        updateRoom(room.id, "glazing", e.target.value)
+                      }
                       style={inputStyle}
                     >
                       <option value="low">Low</option>
@@ -539,7 +603,9 @@ export default function Page() {
                     <label>Sun exposure</label>
                     <select
                       value={room.exposure}
-                      onChange={(e) => updateRoom(room.id, "exposure", e.target.value)}
+                      onChange={(e) =>
+                        updateRoom(room.id, "exposure", e.target.value)
+                      }
                       style={inputStyle}
                     >
                       <option value="north">North</option>
@@ -549,27 +615,53 @@ export default function Page() {
                     </select>
                   </div>
                 </div>
+
+                <label>Estimated pipe run</label>
+                <select
+                  value={room.pipeRun}
+                  onChange={(e) => updateRoom(room.id, "pipeRun", e.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="standard">Up to 3m</option>
+                  <option value="medium">3m to 5m</option>
+                  <option value="long">5m to 7m</option>
+                  <option value="very_long">7m+</option>
+                </select>
               </div>
             ))}
 
-            <h3 style={{ marginTop: "24px", marginBottom: "12px", fontSize: "24px" }}>Project setup</h3>
+            <h3 style={{ marginTop: "24px", marginBottom: "12px", fontSize: "24px" }}>
+              Project setup
+            </h3>
 
             <label>System type</label>
-            <select value={systemType} onChange={(e) => setSystemType(e.target.value)} style={inputStyle}>
+            <select
+              value={systemType}
+              onChange={(e) => setSystemType(e.target.value)}
+              style={inputStyle}
+            >
               <option value="wall">Wall mounted</option>
               <option value="cassette">Cassette</option>
               <option value="ducted">Ducted</option>
             </select>
 
             <label>Preferred brand</label>
-            <select value={brandPreference} onChange={(e) => setBrandPreference(e.target.value)} style={inputStyle}>
+            <select
+              value={brandPreference}
+              onChange={(e) => setBrandPreference(e.target.value)}
+              style={inputStyle}
+            >
               <option value="both">Show both</option>
               <option value="mitsubishi">Mitsubishi Electric only</option>
               <option value="midea">Midea only</option>
             </select>
 
             <label>Room spread / property layout</label>
-            <select value={roomSpread} onChange={(e) => setRoomSpread(e.target.value)} style={inputStyle}>
+            <select
+              value={roomSpread}
+              onChange={(e) => setRoomSpread(e.target.value)}
+              style={inputStyle}
+            >
               <option value="same_side">Same side of house</option>
               <option value="adjacent">Adjacent / close together</option>
               <option value="opposite_sides">Opposite sides of house</option>
@@ -597,16 +689,36 @@ export default function Page() {
           >
             <h2 style={{ fontSize: "32px", marginTop: 0 }}>Project result</h2>
 
-            <p><strong>Total estimated load:</strong> {result.totalLoad} kW</p>
-            <p><strong>Total recommended connected capacity:</strong> {result.totalRecommended} kW</p>
-            <p><strong>Suggested system type:</strong> {result.systemLabel}</p>
+            <p>
+              <strong>Total estimated load:</strong> {result.totalLoad} kW
+            </p>
+            <p>
+              <strong>Total recommended connected capacity:</strong>{" "}
+              {result.totalRecommended} kW
+            </p>
+            <p>
+              <strong>Suggested system type:</strong> {result.systemLabel}
+            </p>
 
             <div style={resultCardStyle}>
               <p style={{ marginTop: 0, fontWeight: 700 }}>Room breakdown</p>
               {result.roomResults.map((room) => (
-                <div key={room.id} style={{ paddingBottom: "12px", marginBottom: "12px", borderBottom: "1px solid #cfd8e3" }}>
+                <div
+                  key={room.id}
+                  style={{
+                    paddingBottom: "12px",
+                    marginBottom: "12px",
+                    borderBottom: "1px solid #cfd8e3",
+                  }}
+                >
                   <p style={{ margin: 0, fontWeight: 700 }}>{room.name}</p>
-                  <p style={{ margin: "6px 0 0 0" }}>{room.area}m² • Load {room.kw}kW • Suggested {room.recommended}kW</p>
+                  <p style={{ margin: "6px 0 0 0" }}>
+                    {room.area}m² • Load {room.kw}kW • Suggested {room.recommended}kW
+                  </p>
+                  <p style={{ margin: "6px 0 0 0", color: "#475569" }}>
+                    Pipe run: {room.pipeRunLabel}{" "}
+                    {room.pipeRunExtra > 0 ? `(+${formatPrice(room.pipeRunExtra)})` : ""}
+                  </p>
                 </div>
               ))}
             </div>
@@ -620,21 +732,30 @@ export default function Page() {
               <p style={{ marginTop: 0, fontWeight: 700 }}>Possible system options</p>
               <ul style={{ margin: 0, paddingLeft: "18px" }}>
                 {result.systemOptions.map((option, index) => (
-                  <li key={index} style={{ marginBottom: "8px" }}>{option}</li>
+                  <li key={index} style={{ marginBottom: "8px" }}>
+                    {option}
+                  </li>
                 ))}
               </ul>
             </div>
 
             {(brandPreference === "both" || brandPreference === "mitsubishi") && (
               <div style={resultCardStyle}>
-                <p style={{ marginTop: 0, fontWeight: 700 }}>Suggested Mitsubishi Electric</p>
+                <p style={{ marginTop: 0, fontWeight: 700 }}>
+                  Suggested Mitsubishi Electric
+                </p>
                 {result.roomResults.map((room) => (
-                  <p key={room.id} style={{ margin: "0 0 8px 0" }}>
-                    <strong>{room.name}:</strong> {room.mitsubishi}
-                  </p>
+                  <div key={room.id} style={{ marginBottom: "10px" }}>
+                    <p style={{ margin: "0 0 4px 0" }}>
+                      <strong>{room.name}:</strong> {room.mitsubishi}
+                    </p>
+                    <p style={{ margin: 0, color: "#475569" }}>
+                      Estimated installed price: {formatPrice(room.mitsubishiUnitPrice)}
+                    </p>
+                  </div>
                 ))}
                 <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
-                  Estimated installed total: {formatPrice(result.mitsubishiPrice.from)} to {formatPrice(result.mitsubishiPrice.to)}
+                  Estimated installed total: {formatPrice(result.mitsubishiTotal)}
                 </p>
               </div>
             )}
@@ -643,12 +764,17 @@ export default function Page() {
               <div style={resultCardStyle}>
                 <p style={{ marginTop: 0, fontWeight: 700 }}>Suggested Midea</p>
                 {result.roomResults.map((room) => (
-                  <p key={room.id} style={{ margin: "0 0 8px 0" }}>
-                    <strong>{room.name}:</strong> {room.midea}
-                  </p>
+                  <div key={room.id} style={{ marginBottom: "10px" }}>
+                    <p style={{ margin: "0 0 4px 0" }}>
+                      <strong>{room.name}:</strong> {room.midea}
+                    </p>
+                    <p style={{ margin: 0, color: "#475569" }}>
+                      Estimated installed price: {formatPrice(room.mideaUnitPrice)}
+                    </p>
+                  </div>
                 ))}
                 <p style={{ marginTop: "14px", marginBottom: 0, color: "#334155" }}>
-                  Estimated installed total: {formatPrice(result.mideaPrice.from)} to {formatPrice(result.mideaPrice.to)}
+                  Estimated installed total: {formatPrice(result.mideaTotal)}
                 </p>
               </div>
             )}
@@ -680,7 +806,9 @@ export default function Page() {
                 lineHeight: 1.5,
               }}
             >
-              Guide prices only. Final pricing should still be adjusted for pipe run, brackets, trunking, access, electrical work, condensate route, outdoor locations and overall install difficulty.
+              Guide prices only. Final pricing should still be adjusted for pipe run,
+              brackets, trunking, access, electrical work, condensate route, outdoor
+              locations and overall install difficulty.
             </p>
           </div>
         </div>
