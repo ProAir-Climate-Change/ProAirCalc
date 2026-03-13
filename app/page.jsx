@@ -1104,10 +1104,6 @@ const customerEstimate = useMemo(() => {
     }}
   />
 </div>
-      }}
-    >
-      Mitsubishi Image
-    </div>
 
     <p
       style={{
@@ -1187,7 +1183,6 @@ const customerEstimate = useMemo(() => {
 </div>
       }}
     >
-      Zen Image
     <div
   style={{
     height: "160px",
