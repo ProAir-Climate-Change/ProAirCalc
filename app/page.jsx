@@ -772,15 +772,21 @@ const roomBreakdown = customerRooms
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          name: customerName,
-          phone: customerPhone,
-          email: customerEmail,
-          postcode: customerPostcode,
-          system: selectedCustomerSystem,
-          rooms: customerRooms.length,
-          load: customerEstimate.totalLoad,
-          capacity: customerEstimate.totalRecommended
-        })
+  name: customerName,
+  phone: customerPhone,
+  email: customerEmail,
+  postcode: customerPostcode,
+  system: systemNames[selectedCustomerSystem],
+  rooms: customerRooms.length,
+  load: customerEstimate.totalLoad,
+  capacity: customerEstimate.totalRecommended,
+  roomBreakdown,
+  mideaPrice: customerEstimate.mideaTotal,
+  mitsubishiPrice: customerEstimate.mitsubishiTotal,
+  zenPrice: customerEstimate.zenTotal,
+  zenEligible: customerEstimate.zenEligible,
+  notes: customerNotes
+})
       });
 
       leadSentRef.current = true;
