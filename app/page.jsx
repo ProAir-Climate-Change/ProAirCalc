@@ -1553,7 +1553,9 @@ Can I get a quote / site survey please?`)}`}
 >
   📲 Send this estimate to ProAir on WhatsApp
 </a>
-                    <p>
+   <p style={{fontSize:"12px", color:"#64748b", marginTop:"6px"}}>
+Most customers receive a reply within 10 minutes during working hours.
+</p>                 <p>
                       <strong>Total estimated cooling load:</strong>{" "}
                       {customerEstimate.totalLoad} kW
                     </p>
