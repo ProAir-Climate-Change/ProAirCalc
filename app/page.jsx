@@ -1500,10 +1500,11 @@ const roomBreakdown = customerRooms
     marginTop: "16px",
     marginBottom: "10px",
     padding: "12px",
-    background: "#f3f4f6",
-    borderRadius: "10px",
-    fontSize: "14px",
-    color: "#374151",
+   background: "#eef4ff",
+border: "1px solid #dbe6ff",
+borderRadius: "10px",
+fontSize: "14px",
+color: "#374151",
   }}
 >
   <strong>Typical installation time</strong>
@@ -1550,7 +1551,7 @@ Can I get a quote / site survey please?`)}`}
     fontWeight: 700,
   }}
 >
-  Send this estimate on WhatsApp
+  📲 Send this estimate to ProAir on WhatsApp
 </a>
                     <p>
                       <strong>Total estimated cooling load:</strong>{" "}
@@ -1580,7 +1581,11 @@ Can I get a quote / site survey please?`)}`}
                       Guide price only. Final cost depends on pipe runs, electrics,
                       access and installation layout.
                     </p>
-                    <button type="submit" style={buttonStyle}>
+             <div style={{ marginTop: "12px", marginBottom: "10px", fontSize: "13px", color: "#374151" }}>
+  ✔ Free site survey included<br/>
+  ✔ F-Gas certified installation<br/>
+  ✔ Up to 7-year manufacturer warranty
+</div>       <button type="submit" style={buttonStyle}>
                       Send estimate request
                     </button>
                   </>
