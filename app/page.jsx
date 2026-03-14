@@ -1439,11 +1439,13 @@ ${roomBreakdown}
 Estimated cooling load: ${customerEstimate.totalLoad} kW
 Suggested total capacity: ${customerEstimate.totalRecommended} kW
 Guide price: ${
-  : selectedCustomerSystem === "zen"
-? customerEstimate.zenEligible
-  ? `£${customerEstimate.zenTotal.toLocaleString()}`
-  : "Not available for this room size"
-: `£${customerEstimate.mitsubishiTotal.toLocaleString()}`
+  selectedCustomerSystem === "midea"
+    ? `£${customerEstimate.mideaTotal.toLocaleString()}`
+    : selectedCustomerSystem === "zen"
+    ? customerEstimate.zenEligible
+      ? `£${customerEstimate.zenTotal.toLocaleString()}`
+      : "Not available for this room size"
+    : `£${customerEstimate.mitsubishiTotal.toLocaleString()}`
 }
 
 Can I get a quote / site survey please?`)}`}
