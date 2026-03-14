@@ -1299,10 +1299,9 @@ const roomBreakdown = customerRooms
                           background: "#e9edf3",
                           borderRadius: "16px",
                           padding: "18px",
-                          border:
-                            selectedCustomerSystem === "mitsubishi"
-                              ? "2px solid #0b2e73"
-                              : "2px solid #d6dde8",
+                          border: selectedCustomerSystem === "mitsubishi"
+  ? "2px solid #22c55e"
+  : "1px solid #e5e7eb",
                           boxShadow:
                             selectedCustomerSystem === "mitsubishi"
                               ? "0 8px 24px rgba(11,46,115,0.12)"
