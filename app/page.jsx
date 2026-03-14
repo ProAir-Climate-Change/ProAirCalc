@@ -713,12 +713,14 @@ const zenTotal = zenEligible
   : null
 
   return {
-    totalLoad: totalLoad.toFixed(2),
-    totalRecommended: totalRecommended.toFixed(1),
-    mideaTotal,
-    mitsubishiTotal,
-    zenTotal,
-    roomResults,
+  totalLoad: totalLoad.toFixed(2),
+  totalRecommended: totalRecommended.toFixed(1),
+  mideaTotal,
+  mitsubishiTotal,
+  zenTotal,
+  zenEligible,
+  roomResults,
+}roomResults,
   }
 }, [customerRooms])
   const customerRoomSummary = useMemo(() => {
@@ -1330,11 +1332,13 @@ const roomBreakdown = customerRooms
 
                       <div
                         onClick={() => {
-                          setSelectedCustomerSystem("zen");
-                          document
-                            .getElementById("customer-form-start")
-                            ?.scrollIntoView({ behavior: "smooth", block: "center" });
-                        }}
+  if (!customerEstimate.zenEligible) return;
+
+  setSelectedCustomerSystem("zen");
+  document
+    .getElementById("customer-form-start")
+    ?.scrollIntoView({ behavior: "smooth", block: "center" });
+}}
                         style={{
                           background: "#e9edf3",
                           borderRadius: "16px",
@@ -1348,7 +1352,7 @@ const roomBreakdown = customerRooms
                               ? "0 8px 24px rgba(11,46,115,0.12)"
                               : "none",
                           cursor: "pointer",
-                          opacity: customerEstimate.zenTotal > 0 ? 1 : 0.65,
+                          opacity: customerEstimate.zenEligible ? 1 : 0.55,
                         }}
                       >
                         <div
@@ -1413,14 +1417,16 @@ const roomBreakdown = customerRooms
                         </p>
 
                         <p style={{ margin: "0 0 6px 0", fontWeight: 700 }}>
-                          {customerEstimate.zenTotal > 0
-                            ? `From £${customerEstimate.zenTotal.toLocaleString()}`
-                            : "Not available for all selected room sizes"}
-                        </p>
+  {customerEstimate.zenEligible
+    ? `From £${customerEstimate.zenTotal.toLocaleString()}`
+    : "Only available up to 5.0kW per room"}
+</p>
 
                         <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
-                          Premium look and feel.
-                        </p>
+  {customerEstimate.zenEligible
+    ? "Premium look and feel."
+    : "Zen range is not available above 5.0kW room sizes."}
+</p>
                       </div>
                     </div>
 
@@ -1434,11 +1440,11 @@ ${roomBreakdown}
 Estimated cooling load: ${customerEstimate.totalLoad} kW
 Suggested total capacity: ${customerEstimate.totalRecommended} kW
 Guide price: ${
-  selectedCustomerSystem === "midea"
-    ? `£${customerEstimate.mideaTotal.toLocaleString()}`
-    : selectedCustomerSystem === "zen"
-    ? `£${customerEstimate.zenTotal.toLocaleString()}`
-    : `£${customerEstimate.mitsubishiTotal.toLocaleString()}`
+  : selectedCustomerSystem === "zen"
+? customerEstimate.zenEligible
+  ? `£${customerEstimate.zenTotal.toLocaleString()}`
+  : "Not available for this room size"
+: `£${customerEstimate.mitsubishiTotal.toLocaleString()}`
 }
 
 Can I get a quote / site survey please?`)}`}
@@ -1476,9 +1482,11 @@ Can I get a quote / site survey please?`)}`}
 
                     {customerEstimate.zenTotal > 0 && (
                       <p>
-                        <strong>Mitsubishi Zen premium guide price:</strong> £
-                        {customerEstimate.zenTotal.toLocaleString()}
-                      </p>
+  <strong>Mitsubishi Zen premium guide price:</strong>{" "}
+  {customerEstimate.zenEligible
+    ? `£${customerEstimate.zenTotal.toLocaleString()}`
+    : "Not available above 5.0kW per room"}
+</p>
                     )}
 
                     <p style={{ fontSize: "13px", color: "#475569" }}>
