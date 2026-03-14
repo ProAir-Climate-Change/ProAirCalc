@@ -712,7 +712,7 @@ const zenTotal = zenEligible
     }, 0)
   : null
 
-  return {
+return {
   totalLoad: totalLoad.toFixed(2),
   totalRecommended: totalRecommended.toFixed(1),
   mideaTotal,
@@ -720,8 +720,7 @@ const zenTotal = zenEligible
   zenTotal,
   zenEligible,
   roomResults,
-}roomResults,
-  }
+}
 }, [customerRooms])
   const customerRoomSummary = useMemo(() => {
     const lines = customerRooms.map((room, index) => {
