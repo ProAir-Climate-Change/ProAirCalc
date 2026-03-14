@@ -1139,8 +1139,19 @@ const roomBreakdown = customerRooms
         {customerRooms.length}
       </p>
     </div>
-  </div>
+<div style={resultCardStyle}>
+  <strong>Typical cooling cost</strong>
+  <p style={{ margin: "8px 0 0 0" }}>
+    {"£"}{customerEstimate.estimatedCoolingMonthly} / month
+  </p>
+</div>
 
+<div style={resultCardStyle}>
+  <strong>Typical heating cost</strong>
+  <p style={{ margin: "8px 0 0 0" }}>
+    {"£"}{customerEstimate.estimatedHeatingMonthly} / month
+  </p>
+</div>
  {!customerDetailsComplete && (
                   <p style={{ margin: 0, color: "#475569" }}>
                     Fill in your name, phone, email and postcode to view guide prices.
