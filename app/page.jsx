@@ -1140,14 +1140,14 @@ const roomBreakdown = customerRooms
       </p>
     </div>
 <div style={resultCardStyle}>
-  <strong>Typical cooling cost</strong>
+  <strong>Estimated cooling cost</strong>
   <p style={{ margin: "8px 0 0 0" }}>
     {"£"}{customerEstimate.estimatedCoolingMonthly} / month
   </p>
 </div>
 
 <div style={resultCardStyle}>
-  <strong>Typical heating cost</strong>
+  <strong>Estimated heating cost</strong>
   <p style={{ margin: "8px 0 0 0" }}>
     {"£"}{customerEstimate.estimatedHeatingMonthly} / month
   </p>
@@ -1160,7 +1160,9 @@ const roomBreakdown = customerRooms
                     Fill in your name, phone, email and postcode to view guide prices.
                   </p>
                 )}
-
+<p style={{ marginTop: "8px", fontSize: "13px", color: "#6b7280" }}>
+  Estimated running costs based on typical domestic use and current electricity prices. Actual costs will vary depending on usage, insulation and energy tariff.
+</p>
                 {customerDetailsComplete && (
                   <>
                    <div style={{ ...resultCardStyle, marginBottom: "20px" }}>
