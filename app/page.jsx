@@ -760,6 +760,47 @@ const roomBreakdown = customerRooms
     return `${index + 1}. ${room.name || "Room"} – ${result.recommended} kW`;
   })
   .join("\n");
+
+  useEffect(() => {
+  if (!customerDetailsComplete || leadSentRef.current) return;
+
+  const sendLead = async () => {
+    try {
+      await fetch("/api/lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: customerName,
+          phone: customerPhone,
+          email: customerEmail,
+          postcode: customerPostcode,
+          system: selectedCustomerSystem,
+          rooms: customerRooms.length,
+          load: customerEstimate.totalLoad,
+          capacity: customerEstimate.totalRecommended
+        })
+      });
+
+      leadSentRef.current = true;
+    } catch (error) {
+      console.error("Lead send failed", error);
+    }
+  };
+
+  sendLead();
+}, [
+  customerDetailsComplete,
+  customerName,
+  customerPhone,
+  customerEmail,
+  customerPostcode,
+  selectedCustomerSystem,
+  customerRooms.length,
+  customerEstimate.totalLoad,
+  customerEstimate.totalRecommended
+]);
   return (
     <div
       style={{
