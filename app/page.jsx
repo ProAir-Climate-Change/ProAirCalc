@@ -1531,25 +1531,28 @@ color: "#374151",
 </div>
 
 <a
-  href={`https://wa.me/447833679777?text=${encodeURIComponent(`Hi ProAir, I used your estimator.
+const message = `
+Hi ProAir 👋
 
-Selected system: ${systemNames[selectedCustomerSystem]}
+I’ve just used your air conditioning estimator and would like to arrange a quote or site survey.
+
+System selected: ${systemNames[selectedCustomerSystem]}
 Number of rooms: ${customerRooms.length}
+
+Install timeframe: ${installTimeframe || "Not specified"}
+
 Room breakdown:
 ${roomBreakdown}
-Estimated cooling load: ${customerEstimate.totalLoad} kW
-Suggested total capacity: ${customerEstimate.totalRecommended} kW
-Guide price: ${
-  selectedCustomerSystem === "midea"
-    ? `£${customerEstimate.mideaTotal.toLocaleString()}`
-    : selectedCustomerSystem === "zen"
-    ? customerEstimate.zenEligible
-      ? `£${customerEstimate.zenTotal.toLocaleString()}`
-      : "Not available for this room size"
-    : `£${customerEstimate.mitsubishiTotal.toLocaleString()}`
-}
 
-Can I get a quote / site survey please?`)}`}
+Estimated cooling load: ${customerEstimate.totalLoad} kW
+Recommended capacity: ${customerEstimate.totalRecommended} kW
+
+Guide price: £${price}
+
+Please let me know the next available date for a survey.
+
+Thank you.
+`;
   target="_blank"
   rel="noreferrer"
   style={{
