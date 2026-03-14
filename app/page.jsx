@@ -1371,8 +1371,8 @@ const roomBreakdown = customerRooms
                             margin: "0 0 10px 8px",
                             padding: "6px 10px",
                             borderRadius: "999px",
-                            background: "#f59e0b",
-                            color: "white",
+                           background: "#22c55e",
+                            color: "#ecfdf5",                            
                             fontSize: "12px",
                             fontWeight: 700,
                           }}
