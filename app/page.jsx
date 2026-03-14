@@ -1531,7 +1531,7 @@ color: "#374151",
 </div>
 
 <a
-  href={`https://wa.me/447833679777?text=${encodeURIComponent(`Hi ProAir 👋
+  href={`https://wa.me/447833679777?text=${encodeURIComponent(`Hi ProAir
 
 I’ve just used your air conditioning estimator and would like to arrange a quote or site survey.
 
