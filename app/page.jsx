@@ -379,6 +379,7 @@ export default function Page() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPostcode, setCustomerPostcode] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
+  const [installTimeframe, setInstallTimeframe] = useState("");
   const [customerRooms, setCustomerRooms] = useState([defaultCustomerRoom]);
   const [selectedCustomerSystem, setSelectedCustomerSystem] = useState("mitsubishi");
 
@@ -789,7 +790,8 @@ const roomBreakdown = customerRooms
   mitsubishiPrice: customerEstimate.mitsubishiTotal,
   zenPrice: customerEstimate.zenTotal,
   zenEligible: customerEstimate.zenEligible,
-  notes: customerNotes
+notes: customerNotes,
+timeframe: installTimeframe
 })
       });
 
@@ -916,8 +918,20 @@ const roomBreakdown = customerRooms
                     required
                   />
                 </div>
-              </div>
+<div>
+  <label>When are you looking to install?</label>
 
+  <select
+    value={installTimeframe}
+    onChange={(e) => setInstallTimeframe(e.target.value)}
+    style={inputStyle}
+  >
+    <option value="">Select timeframe</option>
+    <option value="ASAP">As soon as possible</option>
+    <option value="1 Month">Within the next month</option>
+    <option value="Researching">Just researching</option>
+  </select>
+</div>
               <div
                 style={{
                   display: "flex",
