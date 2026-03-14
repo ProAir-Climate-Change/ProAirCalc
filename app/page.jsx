@@ -710,6 +710,8 @@ const zenTotal = zenEligible
       return price ? sum + price : sum
     }, 0)
   : null
+  const estimatedCoolingMonthly = Math.round(totalRecommended * 3);
+const estimatedHeatingMonthly = Math.round(totalRecommended * 4);
 
 return {
   totalLoad: totalLoad.toFixed(2),
@@ -719,6 +721,8 @@ return {
   zenTotal,
   zenEligible,
   roomResults,
+  estimatedCoolingMonthly,
+  estimatedHeatingMonthly,
 }
 }, [customerRooms])
   const customerRoomSummary = useMemo(() => {
