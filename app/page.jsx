@@ -1054,39 +1054,39 @@ const roomBreakdown = customerRooms
                   marginBottom: "20px",
                 }}
               >
-                1057  <h3 style={{ marginTop: 0 }}>Recommended systems & guide price</h3>
+               <h3 style={{ marginTop: 0 }}>Recommended systems & guide price</h3>
 
-1058  <div
-1059    style={{
-1060      display: "grid",
-1061      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-1062      gap: "12px",
-1063      marginBottom: "20px",
-1064    }}
-1065  >
-1066    <div style={resultCardStyle}>
-1067      <strong>Total cooling load</strong>
-1068      <p style={{ margin: "8px 0 0 0" }}>
-1069        {customerEstimate.totalLoad} kW
-1070      </p>
-1071    </div>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+      gap: "12px",
+      marginBottom: "20px",
+    }}
+  >
+    <div style={resultCardStyle}>
+      <strong>Total cooling load</strong>
+      <p style={{ margin: "8px 0 0 0" }}>
+        {customerEstimate.totalLoad} kW
+      </p>
+    </div>
 
-1072    <div style={resultCardStyle}>
-1073      <strong>Suggested capacity</strong>
-1074      <p style={{ margin: "8px 0 0 0" }}>
-1075        {customerEstimate.totalRecommended} kW
-1076      </p>
-1077    </div>
+    <div style={resultCardStyle}>
+      <strong>Suggested capacity</strong>
+      <p style={{ margin: "8px 0 0 0" }}>
+        {customerEstimate.totalRecommended} kW
+      </p>
+    </div>
 
-1078    <div style={resultCardStyle}>
-1079      <strong>Rooms</strong>
-1080      <p style={{ margin: "8px 0 0 0" }}>
-1081        {customerRooms.length}
-1082      </p>
-1083    </div>
-1084  </div>
+    <div style={resultCardStyle}>
+      <strong>Rooms</strong>
+      <p style={{ margin: "8px 0 0 0" }}>
+        {customerRooms.length}
+      </p>
+    </div>
+  </div>
 
-1085  {!customerDetailsComplete && (
+ {!customerDetailsComplete && (
                   <p style={{ margin: 0, color: "#475569" }}>
                     Fill in your name, phone, email and postcode to view guide prices.
                   </p>
