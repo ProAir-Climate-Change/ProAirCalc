@@ -245,22 +245,21 @@ function getOutdoorSideLabel(outdoorSide) {
 }
 
 function calculateRoom(room) {
-const length = Number(room.length);
-const width = Number(room.width);
-const height = Number(room.height);
+  if (!room.length || !room.width) {
+    return {
+      ...room,
+      area: "Enter room size to calculate",
+      kw: "",
+      recommended: "",
+      recommendedNumber: 0,
+    };
+  }
 
-// If any field is empty, don't calculate yet
-if (!room.length || !room.width) {
-  return {
-    ...room,
-    area: "Enter room size to calculate",
-    kw: "",
-    recommended: "",
-    recommendedNumber: 0,
-  };
-}
+  const length = Number(room.length);
+  const width = Number(room.width);
+  const height = Number(room.height || 0);
 
-const area = length * width;
+  const area = length * width;
 
   let wattsPerM2 = 125;
   if (room.roomType === "bedroom") wattsPerM2 = 110;
