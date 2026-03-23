@@ -149,8 +149,8 @@ const ductedModelMap = {
 const defaultInstallerRoom = {
   id: 1,
   name: "Room 1",
-  length: 5,
-  width: 4,
+ length: "",
+width: "",
   height: 2.4,
   roomType: "living",
   glazing: "medium",
@@ -163,8 +163,8 @@ const defaultInstallerRoom = {
 const defaultCustomerRoom = {
   id: 1,
   name: "Room 1",
-  length: 5,
-  width: 4,
+ length: "",
+width: "",
   height: 2.4,
   roomType: "living",
   glazing: "medium",
@@ -245,7 +245,11 @@ function getOutdoorSideLabel(outdoorSide) {
 }
 
 function calculateRoom(room) {
-  const area = Number(room.length) * Number(room.width);
+  const length = Number(room.length || 0);
+  const width = Number(room.width || 0);
+  const height = Number(room.height || 0);
+
+  const area = length * width;
 
   let wattsPerM2 = 125;
   if (room.roomType === "bedroom") wattsPerM2 = 110;
@@ -261,8 +265,8 @@ function calculateRoom(room) {
   if (room.exposure === "west") factor += 0.08;
   if (room.exposure === "south") factor += 0.14;
 
-  if (Number(room.height) > 2.7) factor += 0.08;
-  if (Number(room.height) > 3.0) factor += 0.08;
+  if (height > 2.7) factor += 0.08;
+  if (height > 3.0) factor += 0.08;
 
   const kw = (area * wattsPerM2 * factor) / 1000;
   const recommended = roundToRecommendedSize(kw);
@@ -988,9 +992,9 @@ timeframe: installTimeframe
                       <input
                         type="number"
                         value={room.length}
-                        onChange={(e) =>
-                          updateCustomerRoom(room.id, "length", Number(e.target.value))
-                        }
+onChange={(e) =>
+  updateCustomerRoom(room.id, "length", Number(e.target.value))
+}
                         style={inputStyle}
                       />
                     </div>
@@ -998,10 +1002,10 @@ timeframe: installTimeframe
                       <label>Width (m)</label>
                       <input
                         type="number"
-                        value={room.width}
-                        onChange={(e) =>
-                          updateCustomerRoom(room.id, "width", Number(e.target.value))
-                        }
+                       value={room.width}
+onChange={(e) =>
+  updateCustomerRoom(room.id, "width", e.target.value)
+}
                         style={inputStyle}
                       />
                     </div>
@@ -1215,8 +1219,6 @@ timeframe: installTimeframe
                         onClick={() => {
                           setSelectedCustomerSystem("midea");
                           document
-                            .getElementById("customer-form-start")
-                            ?.scrollIntoView({ behavior: "smooth", block: "center" });
                         }}
                         style={{
                           background: "#e9edf3",
@@ -1307,8 +1309,6 @@ timeframe: installTimeframe
                         onClick={() => {
                           setSelectedCustomerSystem("mitsubishi");
                           document
-                            .getElementById("customer-form-start")
-                            ?.scrollIntoView({ behavior: "smooth", block: "center" });
                         }}
                         style={{
                           background: "#e9edf3",
@@ -1414,8 +1414,6 @@ timeframe: installTimeframe
 
   setSelectedCustomerSystem("zen");
   document
-    .getElementById("customer-form-start")
-    ?.scrollIntoView({ behavior: "smooth", block: "center" });
 }}
                         style={{
                           background: "#e9edf3",
