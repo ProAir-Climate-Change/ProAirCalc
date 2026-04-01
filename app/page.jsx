@@ -176,6 +176,126 @@ function SystemOptionCard({
   );
 }
 
+function SystemCardsCarousel({
+  customerEstimate,
+  selectedCustomerSystem,
+  setSelectedCustomerSystem,
+}) {
+  const scrollRef = useRef(null);
+  const [isWide, setIsWide] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      setIsWide(window.innerWidth >= 1200);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 1200);
+    };
+
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const scrollByAmount = (direction) => {
+    if (!scrollRef.current) return;
+    const amount = scrollRef.current.clientWidth * 0.82;
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -amount : amount,
+      behavior: "smooth",
+    });
+  };
+
+  const cardWidth = isWide ? "calc((100% - 28px) / 3)" : isTablet ? "calc((100% - 14px) / 2)" : "85%";
+
+  return (
+    <div style={systemCarouselWrapStyle}>
+      <div style={systemCarouselHeaderStyle}>
+        <div style={systemCarouselHintStyle}>Swipe or scroll to compare options</div>
+
+        <div style={systemCarouselButtonsStyle}>
+          <button
+            type="button"
+            onClick={() => scrollByAmount("left")}
+            style={systemScrollButtonStyle}
+            aria-label="Scroll left"
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByAmount("right")}
+            style={systemScrollButtonStyle}
+            aria-label="Scroll right"
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      <div ref={scrollRef} style={systemCardsScrollerStyle}>
+        <div style={systemCardsRowStyle}>
+          <div style={{ ...systemCardItemStyle, minWidth: cardWidth }}>
+            <SystemOptionCard
+              imageSrc="/midea-solstice.png"
+              imageAlt="Midea Solstice"
+              pill="Budget"
+              pillStyle={budgetPillStyle}
+              selected={selectedCustomerSystem === "midea"}
+              title="Midea Solstice"
+              description="Best value option for effective heating and cooling."
+              priceText={`From £${customerEstimate.mideaTotal.toLocaleString()}`}
+              note="Good budget-friendly choice."
+              onClick={() => setSelectedCustomerSystem("midea")}
+            />
+          </div>
+
+          <div style={{ ...systemCardItemStyle, minWidth: cardWidth }}>
+            <SystemOptionCard
+              imageSrc="/mitsubishi-ay.png"
+              imageAlt="Mitsubishi Electric AY"
+              pill="Standard"
+              pillStyle={standardPillStyle}
+              extraPill="⭐ Recommended"
+              extraPillStyle={recommendedPillStyle}
+              selected={selectedCustomerSystem === "mitsubishi"}
+              selectedBorder="green"
+              title="Mitsubishi Electric AY"
+              description="Reliable all-round option with a more premium feel."
+              priceText={`From £${customerEstimate.mitsubishiTotal.toLocaleString()}`}
+              note="Popular balance of quality and value."
+              onClick={() => setSelectedCustomerSystem("mitsubishi")}
+            />
+          </div>
+
+          <div style={{ ...systemCardItemStyle, minWidth: cardWidth }}>
+            <SystemOptionCard
+              imageSrc="/zen.jpg"
+              imageAlt="Mitsubishi Zen"
+              pill="Premium"
+              pillStyle={premiumPillStyle}
+              selected={selectedCustomerSystem === "zen"}
+              title="Mitsubishi Zen"
+              description="Designer premium option for customers wanting a higher-end finish."
+              priceText={
+                customerEstimate.zenEligible
+                  ? `From £${customerEstimate.zenTotal.toLocaleString()}`
+                  : "Only available up to 5.0kW per room"
+              }
+              note={
+                customerEstimate.zenEligible
+                  ? "Premium look and feel."
+                  : "Zen range is not available above 5.0kW room sizes."
+              }
+              onClick={() => setSelectedCustomerSystem("zen")}
+              disabled={!customerEstimate.zenEligible}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -853,11 +973,11 @@ Thank you.
                       <div style={sectionTitleStyle}>
                         Recommended systems & guide price
                       </div>
-                      {renderSystemCards({
-                        customerEstimate,
-                        selectedCustomerSystem,
-                        setSelectedCustomerSystem,
-                      })}
+                      <SystemCardsCarousel
+                        customerEstimate={customerEstimate}
+                        selectedCustomerSystem={selectedCustomerSystem}
+                        setSelectedCustomerSystem={setSelectedCustomerSystem}
+                      />
                     </div>
                   ) : (
                     <div style={unlockCardStyle}>
@@ -977,11 +1097,11 @@ Thank you.
                           Recommended systems & guide price
                         </div>
 
-                        {renderSystemCards({
-                          customerEstimate,
-                          selectedCustomerSystem,
-                          setSelectedCustomerSystem,
-                        })}
+                        <SystemCardsCarousel
+                          customerEstimate={customerEstimate}
+                          selectedCustomerSystem={selectedCustomerSystem}
+                          setSelectedCustomerSystem={setSelectedCustomerSystem}
+                        />
                       </div>
 
                       <a
@@ -1007,67 +1127,6 @@ Thank you.
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function renderSystemCards({
-  customerEstimate,
-  selectedCustomerSystem,
-  setSelectedCustomerSystem,
-}) {
-  return (
-    <div style={systemCardsGridStyle}>
-      <SystemOptionCard
-        imageSrc="/midea-solstice.png"
-        imageAlt="Midea Solstice"
-        pill="Budget"
-        pillStyle={budgetPillStyle}
-        selected={selectedCustomerSystem === "midea"}
-        title="Midea Solstice"
-        description="Best value option for effective heating and cooling."
-        priceText={`From £${customerEstimate.mideaTotal.toLocaleString()}`}
-        note="Good budget-friendly choice."
-        onClick={() => setSelectedCustomerSystem("midea")}
-      />
-
-      <SystemOptionCard
-        imageSrc="/mitsubishi-ay.png"
-        imageAlt="Mitsubishi Electric AY"
-        pill="Standard"
-        pillStyle={standardPillStyle}
-        extraPill="⭐ Recommended"
-        extraPillStyle={recommendedPillStyle}
-        selected={selectedCustomerSystem === "mitsubishi"}
-        selectedBorder="green"
-        title="Mitsubishi Electric AY"
-        description="Reliable all-round option with a more premium feel."
-        priceText={`From £${customerEstimate.mitsubishiTotal.toLocaleString()}`}
-        note="Popular balance of quality and value."
-        onClick={() => setSelectedCustomerSystem("mitsubishi")}
-      />
-
-      <SystemOptionCard
-        imageSrc="/zen.jpg"
-        imageAlt="Mitsubishi Zen"
-        pill="Premium"
-        pillStyle={premiumPillStyle}
-        selected={selectedCustomerSystem === "zen"}
-        title="Mitsubishi Zen"
-        description="Designer premium option for customers wanting a higher-end finish."
-        priceText={
-          customerEstimate.zenEligible
-            ? `From £${customerEstimate.zenTotal.toLocaleString()}`
-            : "Only available up to 5.0kW per room"
-        }
-        note={
-          customerEstimate.zenEligible
-            ? "Premium look and feel."
-            : "Zen range is not available above 5.0kW room sizes."
-        }
-        onClick={() => setSelectedCustomerSystem("zen")}
-        disabled={!customerEstimate.zenEligible}
-      />
     </div>
   );
 }
@@ -1417,9 +1476,61 @@ const systemsWrapStyle = {
   marginBottom: "16px",
 };
 
-const systemCardsGridStyle = {
+const systemCarouselWrapStyle = {
   display: "grid",
+  gap: "12px",
+};
+
+const systemCarouselHeaderStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "12px",
+  flexWrap: "wrap",
+};
+
+const systemCarouselHintStyle = {
+  fontSize: "12px",
+  fontWeight: 700,
+  color: "#64748b",
+};
+
+const systemCarouselButtonsStyle = {
+  display: "flex",
+  gap: "8px",
+};
+
+const systemScrollButtonStyle = {
+  width: "36px",
+  height: "36px",
+  borderRadius: "999px",
+  border: "1px solid #dbe6ff",
+  background: "#ffffff",
+  color: "#0b2e73",
+  fontSize: "16px",
+  fontWeight: 900,
+  cursor: "pointer",
+  boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
+};
+
+const systemCardsScrollerStyle = {
+  overflowX: "auto",
+  overflowY: "hidden",
+  WebkitOverflowScrolling: "touch",
+  scrollSnapType: "x mandatory",
+  paddingBottom: "6px",
+  marginRight: "-4px",
+};
+
+const systemCardsRowStyle = {
+  display: "flex",
   gap: "14px",
+  minWidth: "max-content",
+};
+
+const systemCardItemStyle = {
+  flex: "0 0 auto",
+  scrollSnapAlign: "start",
 };
 
 const systemCardStyle = {
@@ -1427,8 +1538,8 @@ const systemCardStyle = {
   borderRadius: "18px",
   padding: "16px",
   border: "1px solid #e5e7eb",
-  cursor: "pointer",
   boxShadow: "0 8px 20px rgba(15,23,42,0.04)",
+  minHeight: "100%",
 };
 
 const selectedSystemCardStyle = {
