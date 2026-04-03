@@ -1,5 +1,6 @@
 "use client";
 
+import Script from "next/script";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const unitSizes = [2.0, 2.5, 3.5, 4.2, 5.0, 6.0, 7.1, 8.5, 10.0];
@@ -160,7 +161,12 @@ function SystemOptionCard({
         cursor: disabled ? "not-allowed" : "pointer",
       }}
     >
-      <div style={{ ...systemImageWrapStyle, ...(compact ? systemImageWrapCompactStyle : {}) }}>
+      <div
+        style={{
+          ...systemImageWrapStyle,
+          ...(compact ? systemImageWrapCompactStyle : {}),
+        }}
+      >
         <img src={imageSrc} alt={imageAlt} style={systemImageStyle} />
       </div>
 
@@ -170,7 +176,12 @@ function SystemOptionCard({
         {selected ? <span style={selectedPillStyle}>✓ Selected</span> : null}
       </div>
 
-      <h3 style={{ ...systemTitleStyle, ...(compact ? systemTitleCompactStyle : {}) }}>
+      <h3
+        style={{
+          ...systemTitleStyle,
+          ...(compact ? systemTitleCompactStyle : {}),
+        }}
+      >
         {title}
       </h3>
       <p
@@ -181,7 +192,12 @@ function SystemOptionCard({
       >
         {description}
       </p>
-      <p style={{ ...systemPriceStyle, ...(compact ? systemPriceCompactStyle : {}) }}>
+      <p
+        style={{
+          ...systemPriceStyle,
+          ...(compact ? systemPriceCompactStyle : {}),
+        }}
+      >
         {priceText}
       </p>
       <p style={systemNoteStyle}>{note}</p>
@@ -237,7 +253,9 @@ function SystemCardsDeck({
   return (
     <div style={systemCarouselWrapStyle}>
       <div style={systemCarouselHeaderStyle}>
-        <div style={systemCarouselHintStyle}>Swipe or scroll to compare options</div>
+        <div style={systemCarouselHintStyle}>
+          Swipe or scroll to compare options
+        </div>
 
         <div style={systemCarouselButtonsStyle}>
           <button
@@ -259,7 +277,11 @@ function SystemCardsDeck({
         </div>
       </div>
 
-      <div ref={scrollRef} className="system-cards-scroller" style={systemCardsScrollerStyle}>
+      <div
+        ref={scrollRef}
+        className="system-cards-scroller"
+        style={systemCardsScrollerStyle}
+      >
         <div
           style={{
             ...systemCardsRowStyle,
@@ -438,7 +460,8 @@ export default function Page() {
   const [customerNotes, setCustomerNotes] = useState("");
   const [installTimeframe, setInstallTimeframe] = useState("");
   const [customerRooms, setCustomerRooms] = useState([defaultCustomerRoom]);
-  const [selectedCustomerSystem, setSelectedCustomerSystem] = useState("mitsubishi");
+  const [selectedCustomerSystem, setSelectedCustomerSystem] =
+    useState("mitsubishi");
   const [isDesktop, setIsDesktop] = useState(false);
   const [expandedRoomIds, setExpandedRoomIds] = useState([1]);
 
@@ -512,7 +535,9 @@ export default function Page() {
 
   const toggleRoomExpanded = (id) => {
     setExpandedRoomIds((prev) =>
-      prev.includes(id) ? prev.filter((roomId) => roomId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((roomId) => roomId !== id)
+        : [...prev, id]
     );
   };
 
@@ -527,13 +552,20 @@ export default function Page() {
     );
 
     const mideaTotal = roomResults.reduce(
-      (sum, r) => sum + (r.recommendedNumber ? getUnitPrice("midea", r.recommendedNumber) : 0),
+      (sum, r) =>
+        sum +
+        (r.recommendedNumber
+          ? getUnitPrice("midea", r.recommendedNumber)
+          : 0),
       0
     );
 
     const mitsubishiTotal = roomResults.reduce(
       (sum, r) =>
-        sum + (r.recommendedNumber ? getUnitPrice("mitsubishi", r.recommendedNumber) : 0),
+        sum +
+        (r.recommendedNumber
+          ? getUnitPrice("mitsubishi", r.recommendedNumber)
+          : 0),
       0
     );
 
@@ -658,7 +690,8 @@ export default function Page() {
     roomBreakdown,
   ]);
 
-  const whatsappHref = `https://wa.me/447833679777?text=${encodeURIComponent(`Hi ProAir
+  const whatsappHref = `https://wa.me/447833679777?text=${encodeURIComponent(
+    `Hi ProAir
 
 I’ve just used your air conditioning estimator and would like to arrange a quote or site survey.
 
@@ -673,16 +706,24 @@ Estimated cooling load: ${customerEstimate.totalLoad} kW
 Recommended capacity: ${customerEstimate.totalRecommended} kW
 
 Guide price: ${
-    selectedGuidePrice !== null ? `£${selectedGuidePrice.toLocaleString()}` : "Not available"
-  }
+      selectedGuidePrice !== null
+        ? `£${selectedGuidePrice.toLocaleString()}`
+        : "Not available"
+    }
 
 Please let me know the next available date for a survey.
 
 Thank you.
-`)}`;
+`
+  )}`;
 
   return (
     <div style={pageStyle}>
+      <Script
+        src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js"
+        strategy="afterInteractive"
+      />
+
       <style>{`
         .system-cards-scroller::-webkit-scrollbar {
           display: none;
@@ -729,10 +770,18 @@ Thank you.
               action="https://formsubmit.co/contact@proairuk.co.uk"
               method="POST"
             >
-              <input type="hidden" name="_subject" value="New ProAir estimate request" />
+              <input
+                type="hidden"
+                name="_subject"
+                value="New ProAir estimate request"
+              />
               <input type="hidden" name="_captcha" value="false" />
               <input type="hidden" name="_template" value="table" />
-              <input type="hidden" name="Room summary" value={customerRoomSummary} />
+              <input
+                type="hidden"
+                name="Room summary"
+                value={customerRoomSummary}
+              />
               <input
                 type="hidden"
                 name="Selected system"
@@ -808,9 +857,15 @@ Thank you.
               <div style={sectionTitleStyle}>Rooms</div>
 
               <div style={roomHeaderRowStyle}>
-                <p style={cardSubtitleStyle}>Add each room you want to estimate.</p>
+                <p style={cardSubtitleStyle}>
+                  Add each room you want to estimate.
+                </p>
 
-                <button type="button" onClick={addCustomerRoom} style={smallButtonStyle}>
+                <button
+                  type="button"
+                  onClick={addCustomerRoom}
+                  style={smallButtonStyle}
+                >
                   + Add room
                 </button>
               </div>
@@ -829,7 +884,8 @@ Thank you.
                         marginBottom: isExpanded ? "12px" : 0,
                       }}
                       onClick={() => {
-                        if (shouldUseCollapsibleRooms) toggleRoomExpanded(room.id);
+                        if (shouldUseCollapsibleRooms)
+                          toggleRoomExpanded(room.id);
                       }}
                     >
                       <div>
@@ -864,9 +920,17 @@ Thank you.
                         )}
                       </div>
 
-                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "10px",
+                          alignItems: "center",
+                        }}
+                      >
                         {shouldUseCollapsibleRooms && (
-                          <div style={collapseIconStyle}>{isExpanded ? "−" : "+"}</div>
+                          <div style={collapseIconStyle}>
+                            {isExpanded ? "−" : "+"}
+                          </div>
                         )}
 
                         <button
@@ -879,7 +943,9 @@ Thank you.
                             ...removeButtonStyle,
                             opacity: customerRooms.length === 1 ? 0.45 : 1,
                             cursor:
-                              customerRooms.length === 1 ? "not-allowed" : "pointer",
+                              customerRooms.length === 1
+                                ? "not-allowed"
+                                : "pointer",
                           }}
                           disabled={customerRooms.length === 1}
                         >
@@ -898,7 +964,11 @@ Thank you.
                               step="0.1"
                               value={room.length}
                               onChange={(e) =>
-                                updateCustomerRoom(room.id, "length", e.target.value)
+                                updateCustomerRoom(
+                                  room.id,
+                                  "length",
+                                  e.target.value
+                                )
                               }
                               style={inputStyle}
                             />
@@ -910,7 +980,11 @@ Thank you.
                               step="0.1"
                               value={room.width}
                               onChange={(e) =>
-                                updateCustomerRoom(room.id, "width", e.target.value)
+                                updateCustomerRoom(
+                                  room.id,
+                                  "width",
+                                  e.target.value
+                                )
                               }
                               style={inputStyle}
                             />
@@ -939,7 +1013,11 @@ Thank you.
                             <select
                               value={room.roomType}
                               onChange={(e) =>
-                                updateCustomerRoom(room.id, "roomType", e.target.value)
+                                updateCustomerRoom(
+                                  room.id,
+                                  "roomType",
+                                  e.target.value
+                                )
                               }
                               style={inputStyle}
                             >
@@ -958,14 +1036,20 @@ Thank you.
                             <select
                               value={room.glazing}
                               onChange={(e) =>
-                                updateCustomerRoom(room.id, "glazing", e.target.value)
+                                updateCustomerRoom(
+                                  room.id,
+                                  "glazing",
+                                  e.target.value
+                                )
                               }
                               style={inputStyle}
                             >
                               <option value="low">Low</option>
                               <option value="medium">Medium</option>
                               <option value="high">High</option>
-                              <option value="very_high">Very high / bifolds</option>
+                              <option value="very_high">
+                                Very high / bifolds
+                              </option>
                             </select>
                           </div>
                           <div>
@@ -973,7 +1057,11 @@ Thank you.
                             <select
                               value={room.exposure}
                               onChange={(e) =>
-                                updateCustomerRoom(room.id, "exposure", e.target.value)
+                                updateCustomerRoom(
+                                  room.id,
+                                  "exposure",
+                                  e.target.value
+                                )
                               }
                               style={inputStyle}
                             >
@@ -991,7 +1079,11 @@ Thank you.
                             <select
                               value={room.floorLevel}
                               onChange={(e) =>
-                                updateCustomerRoom(room.id, "floorLevel", e.target.value)
+                                updateCustomerRoom(
+                                  room.id,
+                                  "floorLevel",
+                                  e.target.value
+                                )
                               }
                               style={inputStyle}
                             >
@@ -1001,15 +1093,23 @@ Thank you.
                             </select>
                           </div>
                           <div>
-                            <label style={labelStyle}>Best outdoor unit position</label>
+                            <label style={labelStyle}>
+                              Best outdoor unit position
+                            </label>
                             <select
                               value={room.outdoorSide}
                               onChange={(e) =>
-                                updateCustomerRoom(room.id, "outdoorSide", e.target.value)
+                                updateCustomerRoom(
+                                  room.id,
+                                  "outdoorSide",
+                                  e.target.value
+                                )
                               }
                               style={inputStyle}
                             >
-                              <option value="same_side">Same side as room</option>
+                              <option value="same_side">
+                                Same side as room
+                              </option>
                               <option value="front">Front of property</option>
                               <option value="rear">Rear of property</option>
                               <option value="side">Side elevation</option>
@@ -1028,7 +1128,9 @@ Thank you.
 
                           <div style={roomEstimateGridStyle}>
                             <div>
-                              <div style={miniLabelStyle}>Recommended room size</div>
+                              <div style={miniLabelStyle}>
+                                Recommended room size
+                              </div>
                               <div style={miniValueStyle}>
                                 {roomResult.recommended
                                   ? `${roomResult.recommended} kW`
@@ -1075,7 +1177,9 @@ Thank you.
                     <div style={statsGridStyle}>
                       <div style={statCardStyle}>
                         <strong>Total cooling load</strong>
-                        <p style={statValueStyle}>{customerEstimate.totalLoad} kW</p>
+                        <p style={statValueStyle}>
+                          {customerEstimate.totalLoad} kW
+                        </p>
                       </div>
                       <div style={statCardStyle}>
                         <strong>Suggested capacity</strong>
@@ -1133,23 +1237,36 @@ Thank you.
 
               <div style={benefitsCardStyle}>
                 <div style={benefitItemStyle}>
-                  ✔ {customerRooms.length === 1 && "1 unit: typically 4–6 hours"}
+                  ✔ {customerRooms.length === 1 &&
+                    "1 unit: typically 4–6 hours"}
                   {customerRooms.length === 2 &&
                     "2 units: typically completed in 1 day"}
-                  {customerRooms.length === 3 && "3 units: typically 1–2 days"}
-                  {customerRooms.length >= 4 && "4+ units: typically 2–3 days"}
+                  {customerRooms.length === 3 &&
+                    "3 units: typically 1–2 days"}
+                  {customerRooms.length >= 4 &&
+                    "4+ units: typically 2–3 days"}
                 </div>
                 <div style={benefitItemStyle}>✔ Free site survey included</div>
-                <div style={benefitItemStyle}>✔ F-Gas certified installation</div>
-                <div style={benefitItemStyle}>✔ Up to 7-year manufacturer warranty</div>
+                <div style={benefitItemStyle}>
+                  ✔ F-Gas certified installation
+                </div>
+                <div style={benefitItemStyle}>
+                  ✔ Up to 7-year manufacturer warranty
+                </div>
               </div>
 
-              <a href={whatsappHref} target="_blank" rel="noreferrer" style={waStyle}>
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noreferrer"
+                style={waStyle}
+              >
                 📲 Send this estimate to ProAir on WhatsApp
               </a>
 
               <p style={helperTextStyle}>
-                Most customers receive a reply within 10 minutes during working hours.
+                Most customers receive a reply within 10 minutes during working
+                hours.
               </p>
 
               <p style={priceNoteStyle}>
@@ -1181,7 +1298,11 @@ Thank you.
                       <DetailChip icon="👤" label="Customer" value={customerName} />
                       <DetailChip icon="📞" label="Phone" value={customerPhone} />
                       <DetailChip icon="📧" label="Email" value={customerEmail} />
-                      <DetailChip icon="📍" label="Postcode" value={customerPostcode} />
+                      <DetailChip
+                        icon="📍"
+                        label="Postcode"
+                        value={customerPostcode}
+                      />
                       <DetailChip
                         icon="🕒"
                         label="Timeframe"
@@ -1201,7 +1322,9 @@ Thank you.
                     <div style={statsGridStyle}>
                       <div style={statCardStyle}>
                         <strong>Total cooling load</strong>
-                        <p style={statValueStyle}>{customerEstimate.totalLoad} kW</p>
+                        <p style={statValueStyle}>
+                          {customerEstimate.totalLoad} kW
+                        </p>
                       </div>
                       <div style={statCardStyle}>
                         <strong>Suggested capacity</strong>
@@ -1257,7 +1380,8 @@ Thank you.
                     <div style={unlockCardStyle}>
                       <div style={unlockTitleStyle}>🔓 Unlock guide prices</div>
                       <p style={unlockTextStyle}>
-                        Enter your contact details to reveal the guide system prices.
+                        Enter your contact details to reveal the guide system
+                        prices.
                       </p>
                     </div>
                   )}
